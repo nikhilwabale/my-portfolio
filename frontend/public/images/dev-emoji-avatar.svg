@@ -1,0 +1,34 @@
+<svg width="640" height="640" viewBox="0 0 640 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="80" y1="60" x2="560" y2="600" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#20D8FF"/><stop offset="0.55" stop-color="#2F7CFF"/><stop offset="1" stop-color="#9B7CFF"/>
+    </linearGradient>
+    <radialGradient id="r" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(320 320) rotate(90) scale(300)">
+      <stop stop-color="#20D8FF" stop-opacity="0.45"/><stop offset="1" stop-color="#050914" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="0" y="0" width="640" height="640" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="28" stdDeviation="35" flood-color="#20D8FF" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <circle cx="320" cy="320" r="300" fill="url(#r)"/>
+  <circle cx="320" cy="320" r="242" stroke="url(#g)" stroke-width="3" stroke-dasharray="14 18" opacity="0.55"/>
+  <g filter="url(#shadow)">
+    <rect x="125" y="150" width="390" height="300" rx="38" fill="#0B1120" stroke="#223B63" stroke-width="4"/>
+    <rect x="157" y="184" width="326" height="198" rx="18" fill="#071221"/>
+    <path d="M220 252L185 286L220 320" stroke="#20D8FF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M420 252L455 286L420 320" stroke="#9B7CFF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M345 230L293 340" stroke="#F8FAFC" stroke-width="18" stroke-linecap="round"/>
+    <rect x="220" y="415" width="200" height="42" rx="21" fill="url(#g)"/>
+    <rect x="260" y="455" width="120" height="42" rx="18" fill="#111827" stroke="#20D8FF" stroke-opacity="0.5"/>
+  </g>
+  <g>
+    <circle cx="130" cy="235" r="34" fill="#111827" stroke="#20D8FF" stroke-width="3"/>
+    <text x="130" y="247" text-anchor="middle" font-size="30">⚛️</text>
+    <circle cx="506" cy="220" r="36" fill="#111827" stroke="#9B7CFF" stroke-width="3"/>
+    <text x="506" y="232" text-anchor="middle" font-size="30">⚙️</text>
+    <circle cx="508" cy="420" r="34" fill="#111827" stroke="#23E0A0" stroke-width="3"/>
+    <text x="508" y="432" text-anchor="middle" font-size="30">🚀</text>
+    <circle cx="154" cy="440" r="32" fill="#111827" stroke="#2F7CFF" stroke-width="3"/>
+    <text x="154" y="452" text-anchor="middle" font-size="28">💻</text>
+  </g>
+</svg>

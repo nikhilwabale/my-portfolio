@@ -1,0 +1,7 @@
+<svg width="800" height="900" viewBox="0 0 800 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="800" height="900" fill="#f8fafc"/>
+<circle cx="400" cy="350" r="190" fill="#d9dde4"/>
+<circle cx="400" cy="275" r="82" fill="#111827"/>
+<path d="M210 690c35-140 345-140 380 0" fill="#111827"/>
+<text x="400" y="800" text-anchor="middle" font-family="Arial" font-size="54" font-weight="800" fill="#0f172a">NW</text>
+</svg>
