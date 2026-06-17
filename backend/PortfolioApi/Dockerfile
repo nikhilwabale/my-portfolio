@@ -1,13 +1,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["PortfolioAPI.csproj", "./"]
-RUN dotnet restore "PortfolioAPI.csproj"
+
+COPY ["PortfolioApi.csproj", "./"]
+RUN dotnet restore "PortfolioApi.csproj"
+
 COPY . .
-RUN dotnet publish "PortfolioAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "PortfolioApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
+
 ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 EXPOSE 8080
+
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "PortfolioAPI.dll"]
+
+ENTRYPOINT ["dotnet", "PortfolioApi.dll"]
