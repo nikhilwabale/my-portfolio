@@ -89,6 +89,7 @@ export function TurnstileWidget({ siteKey, resetKey = 0, onTokenChange, onError 
         widgetIdRef.current = window.turnstile.render(containerRef.current, {
           sitekey: siteKey,
           theme: 'dark',
+          size: 'flexible',
           appearance: 'always',
           retry: 'auto',
           'retry-interval': 1000,
@@ -158,8 +159,10 @@ export function TurnstileWidget({ siteKey, resetKey = 0, onTokenChange, onError 
   }
 
   return (
-    <div className="mt-5 space-y-3" aria-label="Security verification">
-      <div ref={containerRef} key={`${resetKey}-${reloadKey}`} className="min-h-[70px]" />
+    <div className="turnstile-shell mt-5 space-y-3" aria-label="Security verification">
+      <div className="turnstile-inner">
+        <div ref={containerRef} key={`${resetKey}-${reloadKey}`} className="turnstile-container min-h-[70px]" />
+      </div>
       {status === 'loading' && (
         <p className="text-xs font-semibold text-slate-400">Loading security verification...</p>
       )}

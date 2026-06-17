@@ -3,23 +3,95 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, Moon, Search, Sun, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { navLinks } from '@/data/content';
+import { education, experience, freelanceServices, navLinks, projects, skillGroups } from '@/data/content';
 import { site } from '@/lib/site';
 import { useActiveSection } from '@/hooks/useActiveSection';
 
-const searchable = [
-  { label: 'About Nikhil', href: '#about', desc: 'Experience, highlights and stack summary' },
-  { label: 'Work Experience', href: '#experience', desc: 'Professional software engineering experience and production delivery' },
-  { label: 'Projects', href: '#projects', desc: 'Asset Management System, AMS App and TechCart Product Showcase with problem action result case studies' },
-  { label: 'Skills', href: '#skills', desc: 'Progress-based technical skill section' },
-  { label: 'Education', href: '#education', desc: 'Engineering education and achievements' },
-  { label: 'Services', href: '#freelance', desc: 'Web applications, dashboards, mobile applications and business websites' },
-  { label: 'Contact', href: '#contact', desc: 'Email, social links and contact form' }
+type SearchItem = {
+  label: string;
+  href: string;
+  desc: string;
+  type: string;
+  keywords: string;
+};
+
+const normalizeSearch = (value: string) => value.toLowerCase().replace(/[^a-z0-9+#.\s-]/g, ' ').replace(/\s+/g, ' ').trim();
+
+const baseSearchable: SearchItem[] = [
+  { label: 'Home', href: '#home', type: 'Section', desc: 'Portfolio introduction, availability, resume and hero overview', keywords: 'home portfolio nikhil wabale full stack developer .net developer freelance web app builder resume' },
+  { label: 'About Nikhil', href: '#about', type: 'Section', desc: 'Profile summary, experience highlights and professional background', keywords: 'about nikhil profile pune software engineer full stack developer react asp.net core' },
+  { label: 'Work Experience', href: '#experience', type: 'Section', desc: 'Professional journey across internships, production systems and business delivery', keywords: 'experience work technvil pathlogics frontend developer intern software engineer full stack developer' },
+  { label: 'Projects', href: '#projects', type: 'Section', desc: 'Asset Management System, AMS App and TechCart case studies', keywords: 'projects asset management system ams app techcart portfolio case study' },
+  { label: 'Skills', href: '#skills', type: 'Section', desc: 'React, Next.js, Angular, ASP.NET Core, C#, SQL Server and deployment-ready stack', keywords: 'skills tech stack react next angular asp.net core c# sql server postgresql oracle flutter azure' },
+  { label: 'Education', href: '#education', type: 'Section', desc: 'BE Information Technology, academic background and achievements', keywords: 'education engineering sinhgad hsc ssc information technology cgpa' },
+  { label: 'Services', href: '#freelance', type: 'Section', desc: 'Full-stack web applications, dashboards, mobile apps and business websites', keywords: 'services freelance web application dashboard mobile application landing page business website' },
+  { label: 'Contact', href: '#contact', type: 'Section', desc: 'Send an inquiry for jobs, freelance work or project discussions', keywords: 'contact email phone pune inquiry form captcha turnstile resend' }
 ];
+
+function buildSearchItems(): SearchItem[] {
+  const projectItems = projects.map((project) => ({
+    label: project.title,
+    href: '#projects',
+    type: 'Project',
+    desc: `${project.role} · ${project.summary}`,
+    keywords: [project.title, project.type, project.role, project.period, project.summary, project.problem, project.result, ...project.actions, ...project.stack].join(' ')
+  }));
+
+  const skillItems = skillGroups.map((group) => ({
+    label: group.title,
+    href: '#skills',
+    type: 'Skill',
+    desc: group.skills.join(' · '),
+    keywords: [group.title, ...group.skills].join(' ')
+  }));
+
+  const experienceItems = experience.map((item) => ({
+    label: item.role,
+    href: '#experience',
+    type: 'Experience',
+    desc: `${item.company} · ${item.period}`,
+    keywords: [item.role, item.company, item.location, item.period, item.badge, ...item.bullets, ...item.stack].join(' ')
+  }));
+
+  const educationItems = education.map((item) => ({
+    label: item.title,
+    href: '#education',
+    type: 'Education',
+    desc: `${item.place} · ${item.score}`,
+    keywords: [item.title, item.place, item.period, item.score, item.note].join(' ')
+  }));
+
+  const serviceItems = freelanceServices.map((item) => ({
+    label: item.title,
+    href: '#freelance',
+    type: 'Service',
+    desc: item.text,
+    keywords: `${item.title} ${item.text}`
+  }));
+
+  return [...baseSearchable, ...projectItems, ...skillItems, ...experienceItems, ...educationItems, ...serviceItems];
+}
 
 function SearchModal({ onClose }: { onClose: () => void }) {
   const [query, setQuery] = useState('');
-  const results = searchable.filter((item) => `${item.label} ${item.desc}`.toLowerCase().includes(query.toLowerCase()));
+  const searchable = useMemo(() => buildSearchItems(), []);
+  const normalizedQuery = normalizeSearch(query);
+  const terms = normalizedQuery.split(' ').filter(Boolean);
+
+  const results = useMemo(() => {
+    if (!terms.length) return searchable.slice(0, 8);
+
+    return searchable
+      .map((item) => {
+        const haystack = normalizeSearch(`${item.label} ${item.desc} ${item.type} ${item.keywords}`);
+        const score = terms.reduce((total, term) => total + (haystack.includes(term) ? 1 : 0), 0);
+        return { item, score };
+      })
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score || a.item.label.localeCompare(b.item.label))
+      .slice(0, 10)
+      .map((entry) => entry.item);
+  }, [searchable, terms]);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -44,18 +116,19 @@ function SearchModal({ onClose }: { onClose: () => void }) {
       <motion.div className="search-modal" initial={{ y: -28, opacity: 0, scale: 0.98 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: -18, opacity: 0, scale: 0.98 }} onClick={(e) => e.stopPropagation()}>
         <div className="search-modal-head">
           <Search size={24} className="text-cyan-300" />
-          <input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search sections, projects, skills..." />
+          <input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search React, .NET, projects, skills..." />
           <kbd>ESC</kbd>
           <button onClick={onClose} aria-label="Close search"><X /></button>
         </div>
         <div className="search-modal-body">
-          <p className="mb-3 text-sm font-bold uppercase tracking-[.2em] text-slate-500">Quick navigation</p>
+          <p className="mb-3 text-sm font-bold uppercase tracking-[.2em] text-slate-500">{terms.length ? 'Search results' : 'Quick navigation'}</p>
           {results.map((item) => (
-            <a className="search-result" href={item.href} key={item.href} onClick={onClose}>
-              {item.label}<span className="block text-sm font-normal text-slate-500">{item.desc}</span>
+            <a className="search-result" href={item.href} key={`${item.type}-${item.label}`} onClick={onClose}>
+              <span className="search-result-top"><span>{item.label}</span><em>{item.type}</em></span>
+              <span className="block text-sm font-normal text-slate-500">{item.desc}</span>
             </a>
           ))}
-          {results.length === 0 && <p className="rounded-xl border border-white/10 p-4 text-slate-400">No matching section found.</p>}
+          {results.length === 0 && <p className="rounded-xl border border-white/10 p-4 text-slate-400">No matching result found. Try React, .NET, AMS, SQL, Flutter, contact or resume.</p>}
         </div>
       </motion.div>
     </motion.div>

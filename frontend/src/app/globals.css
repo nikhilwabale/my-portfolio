@@ -944,3 +944,311 @@ select:invalid, select option[value=""] {
   .role-type { white-space: normal !important; }
   .project-preview-image { object-fit: contain !important; background: #071221; }
 }
+
+/* Production mobile fix: Cloudflare Turnstile must not create horizontal page overflow. */
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+#__next,
+main,
+section,
+.container,
+.glass-card,
+.hero-section,
+.hero-copy,
+.contact-form-card,
+form.glass-card {
+  min-width: 0;
+}
+
+.turnstile-shell {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.turnstile-inner {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.turnstile-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden;
+}
+
+.turnstile-container iframe,
+.turnstile-container > div {
+  max-width: 100% !important;
+}
+
+@media (max-width: 420px) {
+  .turnstile-inner {
+    display: flex;
+    justify-content: center;
+    transform: scale(0.94);
+    transform-origin: center top;
+    margin-bottom: -4px;
+  }
+}
+
+@media (max-width: 370px) {
+  .turnstile-inner {
+    transform: scale(0.88);
+    margin-bottom: -8px;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    position: relative;
+  }
+
+  .site-header,
+  .hero-section,
+  .section,
+  footer {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .container {
+    width: calc(100vw - 32px) !important;
+    max-width: calc(100vw - 32px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .site-header .container {
+    width: calc(100vw - 28px) !important;
+    max-width: calc(100vw - 28px) !important;
+  }
+
+  .hero-grid-v10,
+  .hero-grid-v11 {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden;
+  }
+
+  .availability-pill {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .hero-title,
+  .hero-title-v11,
+  .hero-title-pro {
+    max-width: 100%;
+    font-size: clamp(48px, 16vw, 68px) !important;
+    letter-spacing: -0.07em !important;
+  }
+
+  .hero-role,
+  .hero-role-fixed,
+  .role-type,
+  .hero-description {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .contact-form-card,
+  form.glass-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+}
+
+/* Final build fix: professional light theme contrast and complete search UI */
+.search-result-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 5px;
+}
+.search-result-top em {
+  flex: none;
+  border: 1px solid rgba(34, 211, 238, .22);
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: #67e8f9;
+  background: rgba(34, 211, 238, .08);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.light-theme .search-result-top em {
+  color: #0369a1;
+  background: rgba(14, 165, 233, .10);
+  border-color: rgba(14, 165, 233, .22);
+}
+
+.light-theme {
+  --bg: #f8fbff;
+  --bg-2: #eef7ff;
+  --card: rgba(255,255,255,.84);
+  --card-2: rgba(255,255,255,.94);
+  --border: rgba(15,23,42,.13);
+  --text: #0f172a;
+  --muted: #475569;
+}
+.light-theme body,
+.light-theme main,
+.light-theme .section,
+.light-theme footer {
+  color: #0f172a;
+}
+.light-theme body::before {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(14,165,233,.16), transparent 30%),
+    radial-gradient(circle at 86% 42%, rgba(124,58,237,.12), transparent 28%),
+    linear-gradient(180deg, #f8fbff 0%, #eef7ff 50%, #f8fbff 100%) !important;
+}
+.light-theme body::after {
+  background-image: linear-gradient(rgba(14,165,233,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(14,165,233,.12) 1px, transparent 1px) !important;
+}
+.light-theme .site-header,
+.light-theme .mobile-nav-fullscreen {
+  background: rgba(248, 251, 255, .88) !important;
+  border-color: rgba(15,23,42,.10) !important;
+  box-shadow: 0 12px 40px rgba(15,23,42,.06);
+}
+.light-theme .mobile-nav-fullscreen a { color: #0f172a !important; }
+.light-theme .mobile-nav-fullscreen a:hover { background: rgba(14,165,233,.10); color: #0369a1 !important; }
+
+.light-theme .glass-card,
+.light-theme .search-modal,
+.light-theme .hero-visual,
+.light-theme .hero-visual-pro,
+.light-theme .hero-visual-profile,
+.light-theme .delivery-panel,
+.light-theme .skill-progress-card,
+.light-theme .edu-card,
+.light-theme .project-card,
+.light-theme .project-card-pro,
+.light-theme .freelance-card,
+.light-theme .freelance-card-pro,
+.light-theme .about-copy-card,
+.light-theme .about-feature-card,
+.light-theme .about-mini-highlight,
+.light-theme form.glass-card {
+  background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(248,251,255,.78)) !important;
+  border-color: rgba(15,23,42,.13) !important;
+  box-shadow: 0 24px 80px rgba(15,23,42,.08) !important;
+  color: #0f172a !important;
+}
+
+.light-theme h1,
+.light-theme h2,
+.light-theme h3,
+.light-theme h4,
+.light-theme strong,
+.light-theme .hero-title,
+.light-theme .hero-title-pro span:first-child,
+.light-theme .hero-role,
+.light-theme .role-type,
+.light-theme .section-title,
+.light-theme .skill-row-top,
+.light-theme .edu-card h3,
+.light-theme .project-card-pro h3,
+.light-theme .freelance-card-pro h3,
+.light-theme .about-mini-highlight,
+.light-theme .search-result,
+.light-theme .search-modal input,
+.light-theme .search-modal-head input {
+  color: #0f172a !important;
+  text-shadow: none !important;
+}
+
+.light-theme p,
+.light-theme li,
+.light-theme .hero-description,
+.light-theme .section-subtitle,
+.light-theme .project-case p,
+.light-theme .freelance-card-pro p,
+.light-theme .about-copy-card p,
+.light-theme .about-feature-card p,
+.light-theme .edu-card p,
+.light-theme .hero-impact-list p,
+.light-theme .search-modal-body,
+.light-theme .search-result span,
+.light-theme .text-slate-300,
+.light-theme .text-slate-400,
+.light-theme .text-slate-500 {
+  color: #475569 !important;
+}
+
+.light-theme .hero-kicker,
+.light-theme .section-kicker,
+.light-theme .text-cyan-300,
+.light-theme .text-cyan-200,
+.light-theme .skill-icon,
+.light-theme .freelance-card-top,
+.light-theme .about-mini-highlight svg,
+.light-theme .project-case .case-head,
+.light-theme .edu-score {
+  color: #0284c7 !important;
+}
+
+.light-theme .availability-pill {
+  background: rgba(20, 184, 166, .10) !important;
+  border-color: rgba(13, 148, 136, .28) !important;
+  color: #047857 !important;
+}
+.light-theme .hero-code-profile,
+.light-theme pre,
+.light-theme .project-case {
+  background: rgba(241,245,249,.82) !important;
+  border-color: rgba(15,23,42,.13) !important;
+  color: #0f172a !important;
+}
+.light-theme .skill-track { background: rgba(15,23,42,.10) !important; }
+.light-theme .skill-tags span,
+.light-theme .project-card-pro span,
+.light-theme .edu-card .period,
+.light-theme .freelance-card-pro span,
+.light-theme .rounded-lg.border-cyan-400\/25,
+.light-theme .rounded-full.border-cyan-300\/30 {
+  background: rgba(14,165,233,.10) !important;
+  border-color: rgba(14,165,233,.24) !important;
+  color: #0369a1 !important;
+}
+
+.light-theme input,
+.light-theme textarea,
+.light-theme select {
+  background: rgba(255,255,255,.86) !important;
+  border-color: rgba(15,23,42,.16) !important;
+  color: #0f172a !important;
+}
+.light-theme input::placeholder,
+.light-theme textarea::placeholder { color: #64748b !important; }
+.light-theme select option { background: #ffffff !important; color: #0f172a !important; }
+.light-theme .turnstile-shell { background: transparent !important; }
+
+@media (max-width: 640px) {
+  .search-modal-head {
+    flex-wrap: nowrap;
+  }
+  .search-modal-head input {
+    font-size: 15px !important;
+    line-height: 1.3;
+  }
+  .search-result-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
