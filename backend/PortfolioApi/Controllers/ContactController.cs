@@ -1,71 +1,79 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Options;
-using PortfolioApi.Data;
-using PortfolioApi.DTOs;
-using PortfolioApi.Extensions;
-using PortfolioApi.Helpers;
-using PortfolioApi.Models;
-using PortfolioApi.Options;
-using PortfolioApi.Services;
+using Microsoft.EntityFrameworkCore;
+using PortfolioAPI.Data;
+using PortfolioAPI.DTOs;
+using PortfolioAPI.Extensions;
+using PortfolioAPI.Models;
+using PortfolioAPI.Services;
 
-namespace PortfolioApi.Controllers;
+namespace PortfolioAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class ContactController(AppDbContext dbContext, ITurnstileService turnstileService, IEmailService emailService, IOptions<SecurityOptions> securityOptions, ILogger<ContactController> logger) : ControllerBase
+public sealed class ContactController(AppDbContext dbContext, ITurnstileService turnstileService, IEmailService emailService, ILogger<ContactController> logger) : ControllerBase
 {
     [HttpPost]
     [EnableRateLimiting("contact")]
-    public async Task<ActionResult<ContactResponseDto>> Submit([FromBody] ContactRequestDto request, CancellationToken cancellationToken)
+    public async Task<ActionResult<ContactResponse>> Submit([FromBody] ContactRequest request, CancellationToken cancellationToken)
     {
-        var expectedClientKey = securityOptions.Value.ContactClientKey;
-        var suppliedClientKey = Request.Headers["X-Portfolio-Client"].FirstOrDefault();
-        if (!string.IsNullOrWhiteSpace(expectedClientKey) && !string.Equals(suppliedClientKey, expectedClientKey, StringComparison.Ordinal))
-        {
-            return BadRequest(new ContactResponseDto(false, "Invalid request source."));
-        }
-
-        if (!string.IsNullOrWhiteSpace(request.CompanyFaxNumber))
-        {
-            logger.LogWarning("Honeypot triggered from IP {Ip}", HttpContext.GetClientIpAddress());
-            return Ok(new ContactResponseDto(true, "Message received."));
-        }
-
         if (!ModelState.IsValid)
         {
-            return BadRequest(new ContactResponseDto(false, "Please check the form fields and try again."));
+            return BadRequest(new ContactResponse(false, "Please check the form fields and try again."));
         }
 
-        var ipAddress = HttpContext.GetClientIpAddress();
-        var captchaRequired = securityOptions.Value.RequireCaptcha;
-        var captchaVerified = await turnstileService.VerifyAsync(request.TurnstileToken, ipAddress, cancellationToken);
-        if (captchaRequired && !captchaVerified)
+        if (!string.IsNullOrWhiteSpace(request.Website))
         {
-            return BadRequest(new ContactResponseDto(false, "Security verification failed. Please refresh and try again."));
+            logger.LogWarning("Honeypot triggered for IP {Ip}", HttpContext.Connection.RemoteIpAddress?.ToString());
+            return BadRequest(new ContactResponse(false, "Request rejected."));
+        }
+
+        var remoteIp = HttpContext.Connection.RemoteIpAddress?.ToString();
+        var captchaValid = await turnstileService.VerifyAsync(request.TurnstileToken, remoteIp, cancellationToken);
+        if (!captchaValid)
+        {
+            return BadRequest(new ContactResponse(false, "Security verification failed. Please refresh and try again."));
         }
 
         var message = new ContactMessage
         {
-            Name = InputSanitizer.Clean(request.Name, 100),
-            Email = InputSanitizer.Clean(request.Email, 255),
-            Subject = InputSanitizer.Clean(request.Subject, 200),
-            Message = InputSanitizer.Clean(request.Message, 2000),
-            InquiryType = InputSanitizer.Clean(request.InquiryType, 30),
-            IpAddress = InputSanitizer.Clean(ipAddress, 80),
-            UserAgent = InputSanitizer.Clean(Request.Headers.UserAgent.ToString(), 500),
-            CaptchaVerified = captchaVerified,
+            Name = StringSanitizer.Clean(request.Name, 100),
+            Email = StringSanitizer.Clean(request.Email, 255).ToLowerInvariant(),
+            Subject = StringSanitizer.Clean(request.Subject, 180),
+            InquiryType = StringSanitizer.Clean(request.InquiryType, 80),
+            Message = StringSanitizer.Clean(request.Message, 2000),
+            IpAddress = remoteIp,
+            UserAgent = Request.Headers.UserAgent.ToString(),
             SubmittedAtUtc = DateTime.UtcNow
         };
 
-        dbContext.ContactMessages.Add(message);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            dbContext.ContactMessages.Add(message);
+            await dbContext.SaveChangesAsync(cancellationToken);
 
-        var emailResult = await emailService.SendContactEmailAsync(message, cancellationToken);
-        message.EmailNotificationSent = emailResult.Success;
-        message.EmailStatus = InputSanitizer.Clean(emailResult.Status, 120);
-        await dbContext.SaveChangesAsync(cancellationToken);
+            var emailResult = await emailService.SendContactNotificationAsync(message, cancellationToken);
+            message.EmailNotificationSent = emailResult.Success;
+            message.EmailFailureReason = emailResult.Error?.Length > 1000 ? emailResult.Error[..1000] : emailResult.Error;
+            await dbContext.SaveChangesAsync(cancellationToken);
 
-        return Ok(new ContactResponseDto(true, "Message sent successfully. Thank you for reaching out.", message.Id, emailResult.Success));
+            if (!emailResult.Success)
+            {
+                logger.LogWarning("Contact message {MessageId} was saved but email notification failed: {Reason}", message.Id, emailResult.Error);
+                return StatusCode(StatusCodes.Status502BadGateway, new ContactResponse(false, "Your message was saved, but email notification failed. Please check Resend API key, sender and verified recipient settings."));
+            }
+        }
+        catch (DbUpdateException ex)
+        {
+            logger.LogError(ex, "Database save failed for contact request from {Email}", message.Email);
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new ContactResponse(false, "Contact service is temporarily unavailable. Please try again later."));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while processing contact request from {Email}", message.Email);
+            return StatusCode(StatusCodes.Status500InternalServerError, new ContactResponse(false, "Something went wrong. Please try again later."));
+        }
+
+        return Ok(new ContactResponse(true, "Message submitted successfully. I will get back to you soon.", message.Id));
     }
 }

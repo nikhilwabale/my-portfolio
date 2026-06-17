@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: my-portfolio-api
+    runtime: docker
+    rootDir: backend/PortfolioAPI
+    dockerfilePath: ./Dockerfile
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:8080
+      - key: Cors__AllowedOrigins__0
+        value: https://my-portfolio-lake-one.vercel.app
+      - key: Security__RequireTurnstileInProduction
+        value: "true"
+      - key: Security__EnableTurnstileInDevelopment
+        value: "false"
+      - key: ConnectionStrings__DefaultConnection
+        sync: false
+      - key: Turnstile__SecretKey
+        sync: false
+      - key: Resend__ApiKey
+        sync: false
+      - key: Resend__FromEmail
+        value: onboarding@resend.dev
+      - key: Resend__ToEmail
+        value: wablenikhil2000@gmail.com

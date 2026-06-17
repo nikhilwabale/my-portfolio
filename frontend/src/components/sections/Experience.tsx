@@ -8,7 +8,7 @@ export function Experience() {
   return (
     <section id="experience" className="section">
       <div className="container">
-        <SectionHeader kicker="Work Experience" title="Where I've" highlight="shipped." subtitle="Professional journey across production systems, frontend interfaces, backend APIs and measurable business outcomes." />
+        <SectionHeader kicker="Work Experience" title="Where I've" highlight="shipped." subtitle="Building software solutions across frontend interfaces, backend APIs, mobile workflows and business-ready application modules." />
         <div className="relative mx-auto max-w-5xl">
           <motion.div initial={{ scaleY: 0 }} whileInView={{ scaleY: 1 }} viewport={{ once: true }} transition={{ duration: 1.2 }} className="absolute left-4 top-0 hidden h-full w-px origin-top bg-cyan-400/50 md:left-1/2 md:block" />
           <div className="space-y-10">

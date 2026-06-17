@@ -1,0 +1,24 @@
+LOCAL RUN STEPS
+
+1) Start backend:
+   cd backend/PortfolioAPI
+   dotnet run
+
+Expected:
+   Database check completed successfully.
+   Now listening on: http://localhost:7000
+
+2) Start frontend:
+   cd frontend
+   npm install
+   npm run dev
+
+Expected:
+   http://localhost:3000
+
+Local Turnstile is disabled to avoid localhost verification stuck issues.
+Production Turnstile must be enabled in Vercel by setting:
+   NEXT_PUBLIC_ENABLE_TURNSTILE=true
+   NEXT_PUBLIC_TURNSTILE_SITE_KEY=<Cloudflare site key>
+
+Production backend secrets must be added in Render environment variables, not committed to GitHub.

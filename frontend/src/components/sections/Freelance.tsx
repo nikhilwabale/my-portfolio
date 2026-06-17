@@ -9,7 +9,7 @@ export function Freelance() {
   return (
     <section id="freelance" className="section">
       <div className="container">
-        <SectionHeader kicker="Freelance" title="Available for" highlight="projects." subtitle="Along with job opportunities, I am open to freelance work for web apps, mobile apps, desktop workflows and conversion-focused business websites." />
+        <SectionHeader kicker="Freelance" title="Available for" highlight="projects." subtitle="Along with full-time opportunities, I am open to selected freelance work for web applications, dashboards, mobile apps and business websites." />
         <div className="freelance-grid grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {freelanceServices.map((s, i) => {
             const Icon = s.icon;

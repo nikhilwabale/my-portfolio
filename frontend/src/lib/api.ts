@@ -3,36 +3,37 @@ export type ContactPayload = {
   email: string;
   subject: string;
   message: string;
-  inquiryType: 'job' | 'freelance' | 'project' | 'other';
+  inquiryType: string;
   turnstileToken?: string;
-  companyFaxNumber?: string;
+  website?: string;
 };
 
-export type ContactResponse = {
+export type ContactApiResponse = {
   success: boolean;
   message: string;
-  referenceId?: number;
-  emailNotificationSent?: boolean;
 };
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://localhost:7214';
-const CONTACT_CLIENT_KEY = process.env.NEXT_PUBLIC_CONTACT_CLIENT_KEY || 'portfolio-web-client';
+const API_URL = process.env.NEXT_PUBLIC_CONTACT_API_URL ?? 'http://localhost:7000/api/contact';
 
-export async function submitContact(payload: ContactPayload): Promise<ContactResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/contact`, {
+export async function sendContactMessage(payload: ContactPayload): Promise<ContactApiResponse> {
+  const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'X-Portfolio-Client': CONTACT_CLIENT_KEY
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify(payload)
   });
 
-  const data = (await response.json().catch(() => null)) as ContactResponse | null;
-
-  if (!response.ok) {
-    throw new Error(data?.message || 'Unable to send message. Please try again.');
+  let data: ContactApiResponse | null = null;
+  try {
+    data = (await response.json()) as ContactApiResponse;
+  } catch {
+    data = null;
   }
 
-  return data ?? { success: true, message: 'Message sent successfully.' };
+  if (!response.ok) {
+    throw new Error(data?.message ?? 'Unable to submit your message. Please try again.');
+  }
+
+  return data ?? { success: true, message: 'Message submitted successfully.' };
 }

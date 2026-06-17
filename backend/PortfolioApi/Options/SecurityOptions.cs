@@ -1,7 +1,7 @@
-namespace PortfolioApi.Options;
+namespace PortfolioAPI.Options;
 
 public sealed class SecurityOptions
 {
-    public string ContactClientKey { get; set; } = "portfolio-web-client";
-    public bool RequireCaptcha { get; set; } = false;
+    public bool RequireTurnstileInProduction { get; set; } = true;
+    public bool EnableTurnstileInDevelopment { get; set; } = false;
 }

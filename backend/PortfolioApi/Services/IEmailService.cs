@@ -1,10 +1,8 @@
-using PortfolioApi.Models;
+using PortfolioAPI.Models;
 
-namespace PortfolioApi.Services;
+namespace PortfolioAPI.Services;
 
 public interface IEmailService
 {
-    Task<EmailSendResult> SendContactEmailAsync(ContactMessage message, CancellationToken cancellationToken);
+    Task<(bool Success, string? Error)> SendContactNotificationAsync(ContactMessage message, CancellationToken cancellationToken);
 }
-
-public sealed record EmailSendResult(bool Success, string Status);

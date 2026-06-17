@@ -8,7 +8,6 @@ const groups = [
   {
     icon: Globe2,
     title: 'Frontend Engineering',
-    accent: 'cyan',
     items: [
       { name: 'React.js', level: 90 },
       { name: 'Next.js', level: 86 },
@@ -20,43 +19,38 @@ const groups = [
   {
     icon: Server,
     title: 'Backend & APIs',
-    accent: 'purple',
     items: [
       { name: 'ASP.NET Core', level: 88 },
       { name: 'C#', level: 86 },
       { name: 'REST APIs', level: 90 },
       { name: 'JWT / RBAC', level: 82 }
     ],
-    tags: ['Web API', 'Middleware', 'DI', 'Rate Limiting']
+    tags: ['Web API', 'Middleware', 'Dependency Injection', 'Rate Limiting']
   },
   {
     icon: Database,
     title: 'Database Layer',
-    accent: 'cyan',
     items: [
       { name: 'SQL Server', level: 86 },
-      { name: 'Entity Framework Core', level: 82 },
-      { name: 'LINQ', level: 84 },
-      { name: 'Stored Procedures', level: 74 }
+      { name: 'PostgreSQL', level: 74 },
+      { name: 'Oracle Database', level: 62 },
+      { name: 'Entity Framework Core', level: 82 }
     ],
-    tags: ['Migrations', 'Query Optimization', 'Relational Design']
+    tags: ['LINQ', 'Migrations', 'Relational Design', 'Query Optimization']
   },
   {
     icon: Smartphone,
-    title: 'Mobile & Integrations',
-    accent: 'green',
+    title: 'Mobile Development',
     items: [
       { name: 'Flutter', level: 72 },
-      { name: 'Firebase', level: 70 },
-      { name: 'Google Maps', level: 68 },
-      { name: 'FCM', level: 65 }
+      { name: 'Android', level: 70 },
+      { name: 'iOS', level: 58 }
     ],
-    tags: ['Android', 'Push Notifications', 'Maps SDK']
+    tags: ['Firebase', 'Google Maps', 'FCM', 'Push Notifications']
   },
   {
     icon: Wrench,
     title: 'Tools & Delivery',
-    accent: 'purple',
     items: [
       { name: 'Git / GitHub', level: 86 },
       { name: 'Postman / Swagger', level: 86 },
@@ -67,15 +61,14 @@ const groups = [
   },
   {
     icon: Code2,
-    title: 'Freelance Stack',
-    accent: 'cyan',
+    title: 'Product Delivery',
     items: [
       { name: 'Landing Pages', level: 88 },
-      { name: 'SEO Setup', level: 82 },
+      { name: 'Admin Dashboards', level: 84 },
       { name: 'Contact Forms', level: 80 },
-      { name: 'Business Websites', level: 84 }
+      { name: 'API Integration', level: 86 }
     ],
-    tags: ['Portfolio Sites', 'Admin Dashboards', 'API Integration']
+    tags: ['Portfolio Sites', 'Business Websites', 'Validation', 'Deployment Ready']
   }
 ];
 
@@ -83,17 +76,10 @@ export function Skills() {
   return (
     <section id="skills" className="section border-t border-cyan-400/20">
       <div className="container">
-        <SectionHeader kicker="Tech Stack" title="Skills with" highlight="depth." subtitle="Not just a list of tools — this shows where I am strongest and how I use each stack in real projects." />
+        <SectionHeader kicker="Tech Stack" title="Skills with" highlight="depth." subtitle="A focused stack for building responsive interfaces, secure APIs, relational databases and deployment-ready business applications." />
         <div className="skill-progress-grid">
           {groups.map((group, i) => (
-            <motion.div
-              key={group.title}
-              initial={{ opacity: 0, y: 34 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.22 }}
-              transition={{ delay: i * 0.05, duration: 0.5 }}
-              className="glass-card skill-progress-card"
-            >
+            <motion.div key={group.title} initial={{ opacity: 0, y: 34 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.22 }} transition={{ delay: i * 0.05, duration: 0.5 }} className="glass-card skill-progress-card">
               <div className="skill-head">
                 <div className="skill-head-left">
                   <div className="skill-icon"><group.icon size={22} /></div>
@@ -105,13 +91,7 @@ export function Skills() {
                   <div key={skill.name}>
                     <div className="skill-row-top"><span>{skill.name}</span><span>{skill.level}%</span></div>
                     <div className="skill-track">
-                      <motion.div
-                        className="skill-fill"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.9, delay: idx * 0.08, ease: 'easeOut' }}
-                      />
+                      <motion.div className="skill-fill" initial={{ width: 0 }} whileInView={{ width: `${skill.level}%` }} viewport={{ once: true }} transition={{ duration: 0.9, delay: idx * 0.08, ease: 'easeOut' }} />
                     </div>
                   </div>
                 ))}

@@ -1,44 +1,36 @@
-using System.Net.Http.Json;
-using System.Text.Json.Serialization;
+using System.Text.Json;
 using Microsoft.Extensions.Options;
-using PortfolioApi.Options;
+using PortfolioAPI.Options;
 
-namespace PortfolioApi.Services;
+namespace PortfolioAPI.Services;
 
-public sealed class TurnstileService(HttpClient httpClient, IOptions<TurnstileOptions> options, ILogger<TurnstileService> logger) : ITurnstileService
+public sealed class TurnstileService(IHttpClientFactory httpClientFactory, IConfiguration configuration, IHostEnvironment environment, IOptions<SecurityOptions> securityOptions) : ITurnstileService
 {
-    public async Task<bool> VerifyAsync(string? token, string ipAddress, CancellationToken cancellationToken)
+    public async Task<bool> VerifyAsync(string? token, string? remoteIp, CancellationToken cancellationToken)
     {
-        var secret = options.Value.SecretKey;
-        if (string.IsNullOrWhiteSpace(secret))
-        {
-            logger.LogWarning("Turnstile secret key not configured. Captcha verification skipped.");
-            return true;
-        }
+        var secret = configuration["Turnstile:SecretKey"] ?? configuration["TURNSTILE_SECRET_KEY"];
+        var shouldVerify = environment.IsProduction()
+            ? securityOptions.Value.RequireTurnstileInProduction
+            : securityOptions.Value.EnableTurnstileInDevelopment;
 
-        if (string.IsNullOrWhiteSpace(token)) return false;
+        if (!shouldVerify) return true;
+        if (string.IsNullOrWhiteSpace(secret) || string.IsNullOrWhiteSpace(token)) return false;
 
-        var form = new Dictionary<string, string>
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["secret"] = secret,
             ["response"] = token,
-            ["remoteip"] = ipAddress
-        };
+            ["remoteip"] = remoteIp ?? string.Empty
+        });
 
-        using var response = await httpClient.PostAsync("https://challenges.cloudflare.com/turnstile/v0/siteverify", new FormUrlEncodedContent(form), cancellationToken);
-        if (!response.IsSuccessStatusCode)
-        {
-            logger.LogWarning("Turnstile verification HTTP failure: {StatusCode}", response.StatusCode);
-            return false;
-        }
+        var client = httpClientFactory.CreateClient("turnstile");
+        using var response = await client.PostAsync("https://challenges.cloudflare.com/turnstile/v0/siteverify", content, cancellationToken);
+        if (!response.IsSuccessStatusCode) return false;
 
-        var result = await response.Content.ReadFromJsonAsync<TurnstileVerifyResponse>(cancellationToken: cancellationToken);
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var result = await JsonSerializer.DeserializeAsync<TurnstileResponse>(stream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
         return result?.Success == true;
     }
 
-    private sealed class TurnstileVerifyResponse
-    {
-        [JsonPropertyName("success")]
-        public bool Success { get; set; }
-    }
+    private sealed record TurnstileResponse(bool Success);
 }

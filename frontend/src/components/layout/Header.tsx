@@ -9,11 +9,11 @@ import { useActiveSection } from '@/hooks/useActiveSection';
 
 const searchable = [
   { label: 'About Nikhil', href: '#about', desc: 'Experience, highlights and stack summary' },
-  { label: 'Work Experience', href: '#experience', desc: 'PathLogics internship, Technvil full stack role and freelance project journey' },
+  { label: 'Work Experience', href: '#experience', desc: 'Professional software engineering experience and production delivery' },
   { label: 'Projects', href: '#projects', desc: 'Asset Management System, AMS App and TechCart Product Showcase with problem action result case studies' },
   { label: 'Skills', href: '#skills', desc: 'Progress-based technical skill section' },
   { label: 'Education', href: '#education', desc: 'Engineering education and achievements' },
-  { label: 'Freelance Services', href: '#freelance', desc: 'Full stack web application, mobile application, desktop application and business website services' },
+  { label: 'Services', href: '#freelance', desc: 'Web applications, dashboards, mobile applications and business websites' },
   { label: 'Contact', href: '#contact', desc: 'Email, social links and contact form' }
 ];
 
@@ -73,6 +73,15 @@ export function Header() {
     document.documentElement.classList.toggle('light-theme', lightMode);
   }, [lightMode]);
 
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
   return (
     <>
       <motion.header initial={{ y: -90, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.55 }} className="site-header fixed inset-x-0 top-0 z-50 border-b border-cyan-400/10 bg-[#06101c]/78 backdrop-blur-2xl">
@@ -90,7 +99,7 @@ export function Header() {
             <button className="focus-ring lg:hidden" onClick={() => setOpen((v) => !v)} aria-label="Open navigation">{open ? <X /> : <Menu />}</button>
           </div>
         </nav>
-        {open && <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} className="mobile-nav border-t border-white/10 bg-[#06101c] px-5 pb-5 lg:hidden">{navLinks.map((l) => <a onClick={() => setOpen(false)} className="block rounded-xl px-4 py-3 font-bold text-slate-200" key={l.href} href={l.href}>{l.label}</a>)}</motion.div>}
+        {open && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mobile-nav mobile-nav-fullscreen border-t border-white/10 bg-[#06101c] px-5 pb-8 lg:hidden">{navLinks.map((l) => <a onClick={() => setOpen(false)} className="block rounded-xl px-4 py-3 font-bold text-slate-200" key={l.href} href={l.href}>{l.label}</a>)}</motion.div>}
       </motion.header>
       <AnimatePresence>{searchOpen && <SearchModal onClose={() => setSearchOpen(false)} />}</AnimatePresence>
     </>
@@ -98,5 +107,5 @@ export function Header() {
 }
 
 export function Footer() {
-  return <footer className="border-t border-cyan-400/15 py-9"><div className="container flex flex-col items-center justify-between gap-4 text-slate-400 md:flex-row"><p>© 2026 <span className="text-cyan-300">{site.name}</span>. Built with Next.js & Framer Motion.</p><div className="flex gap-3"><a href={site.socials.github}>GitHub</a><a href={site.socials.linkedin}>LinkedIn</a><a href={site.socials.x}>X</a></div></div></footer>;
+  return <footer className="border-t border-cyan-400/15 py-9"><div className="container flex flex-col items-center justify-between gap-4 text-slate-400 md:flex-row"><p>© {new Date().getFullYear()} <span className="text-cyan-300">{site.name}</span>. All rights reserved.</p><div className="text-sm text-slate-500">Built for professional opportunities and selected project work.</div></div></footer>;
 }

@@ -2,9 +2,8 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { aboutCards } from '@/data/content';
+import { CheckCircle2 } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { MagneticCard } from '@/components/ui/MagneticCard';
 
 export function About() {
   return (
@@ -14,45 +13,45 @@ export function About() {
           kicker="About Me"
           title="Built on"
           highlight="fundamentals."
-          subtitle="A practical full-stack developer focused on clean UI, reliable APIs, database-driven workflows and real business outcomes."
+          subtitle="A short profile snapshot — who I am, how I work and what I am currently looking for."
         />
-        <div className="grid gap-10 lg:grid-cols-[.85fr_1.15fr]">
-          <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="space-y-7">
-            <div className="about-photo-card relative mx-auto h-[390px] max-w-[360px] overflow-hidden rounded-[28px] border border-cyan-300/35 bg-white/95 shadow-[0_0_55px_rgba(32,216,255,.18)]">
-              <Image src="/images/profile-placeholder.svg" alt="Nikhil Wabale professional avatar" fill className="object-cover" priority />
-              <div className="status-chip absolute bottom-5 right-5 rounded-2xl border border-emerald-400/30 bg-[#071221]/90 px-5 py-4 font-mono text-sm shadow-[0_0_24px_rgba(16,185,129,.18)]">
+        <div className="about-profile-grid">
+          <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="about-photo-card-wrap">
+            <div className="about-photo-card relative mx-auto h-[430px] max-w-[370px] overflow-hidden rounded-[30px] border border-cyan-300/35 bg-slate-950 shadow-[0_0_55px_rgba(32,216,255,.18)]">
+              <Image src="/images/profile-nikhil.jpg" alt="Nikhil Wabale" fill sizes="(max-width: 768px) 82vw, 370px" className="object-cover object-top" priority />
+              <div className="status-chip absolute right-5 top-5 rounded-2xl border border-emerald-400/35 bg-[#06121f]/90 px-4 py-3 font-mono text-xs shadow-[0_0_24px_rgba(16,185,129,.20)]">
                 <span className="text-slate-400">status</span><br/><span className="text-emerald-300">● Available</span>
               </div>
             </div>
-            <blockquote className="about-quote border-l-2 border-cyan-400 pl-7 text-2xl font-black italic leading-snug">
-              “I like building products where the UI feels clean, the API is reliable, and the database supports the workflow properly.”
-            </blockquote>
           </motion.div>
 
-          <div className="space-y-6">
+          <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="space-y-6">
             <div className="glass-card about-copy-card p-7">
               <p className="text-xl leading-9 text-slate-300">
-                I am <strong className="text-white">Nikhil Wabale</strong>, a Pune-based Full Stack Developer with 2+ years of experience building production web and mobile applications using <strong className="text-cyan-300">React.js, Next.js, Angular, ASP.NET Core, C#, SQL Server, EF Core</strong> and Flutter.
+                I am <strong className="text-white">Nikhil Wabale</strong>, a Pune-based Software Engineer who enjoys converting practical business requirements into usable digital products.
               </p>
               <p className="mt-5 text-xl leading-9 text-slate-300">
-                My work includes enterprise dashboards, API-driven modules, authentication flows, role-based screens, database-backed workflows and responsive interfaces. Along with full-time opportunities, I am also open to <strong className="text-purple-300">freelance websites, landing pages, mobile apps and full-stack web application projects</strong>.
+                My work style is hands-on and outcome-focused: understand the requirement clearly, build clean interfaces, connect reliable APIs, validate data properly and keep the full flow easy to use.
+              </p>
+              <p className="mt-5 text-xl leading-9 text-slate-300">
+                I am currently available for software engineering opportunities and selected project work where I can contribute to real products, internal dashboards, business websites or API-driven systems.
               </p>
             </div>
 
-            <div className="grid gap-4">
-              {aboutCards.map((h) => (
-                <MagneticCard key={h.title} className="about-feature-card p-6">
-                  <div className="flex gap-5">
-                    <h.icon className="shrink-0 text-cyan-300" />
-                    <div>
-                      <h3 className="text-xl font-black">{h.title}</h3>
-                      <p className="mt-2 text-slate-400">{h.text}</p>
-                    </div>
-                  </div>
-                </MagneticCard>
+            <div className="about-highlights-grid">
+              {[
+                'Pune, Maharashtra, India',
+                'Immediate joiner',
+                'Open to full-stack and .NET roles',
+                'Available for selected project work'
+              ].map((item) => (
+                <div key={item} className="glass-card about-mini-highlight">
+                  <CheckCircle2 size={18} />
+                  <span>{item}</span>
+                </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

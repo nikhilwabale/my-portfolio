@@ -1,6 +1,6 @@
-namespace PortfolioApi.Services;
+namespace PortfolioAPI.Services;
 
 public interface ITurnstileService
 {
-    Task<bool> VerifyAsync(string? token, string ipAddress, CancellationToken cancellationToken);
+    Task<bool> VerifyAsync(string? token, string? remoteIp, CancellationToken cancellationToken);
 }

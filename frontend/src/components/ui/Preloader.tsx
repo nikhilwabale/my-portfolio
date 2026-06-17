@@ -30,7 +30,7 @@ export function Preloader() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.25, duration: 0.45 }}
       >
-        Building the interface...
+        Welcome to Nikhil Wabale Portfolio
       </motion.p>
       <motion.div className="preloader-bar" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 1.45, ease: 'easeInOut' }} />
     </motion.div>
