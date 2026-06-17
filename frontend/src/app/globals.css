@@ -43,6 +43,7 @@ body::after {
   z-index: -2;
   background-image: linear-gradient(rgba(56,189,248,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,.07) 1px, transparent 1px);
   background-size: 72px 72px;
+  -webkit-mask-image: linear-gradient(to bottom, black, rgba(0,0,0,.65), transparent 92%);
   mask-image: linear-gradient(to bottom, black, rgba(0,0,0,.65), transparent 92%);
 }
 ::selection { background: rgba(32,216,255,.28); }
@@ -181,6 +182,7 @@ button,input,textarea { font: inherit; }
   inset: 0;
   background-image: linear-gradient(rgba(56,189,248,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,.05) 1px, transparent 1px);
   background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(circle at 50% 35%, black, transparent 74%);
   mask-image: radial-gradient(circle at 50% 35%, black, transparent 74%);
 }
 .hero-visual::after {
@@ -233,6 +235,7 @@ button,input,textarea { font: inherit; }
   border: 1px solid rgba(32,216,255,.28);
   color: #a5f3fc;
   background: rgba(8,13,25,.66);
+  -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
   font-weight: 800;
   font-size: 13px;
@@ -270,6 +273,7 @@ body.has-pro-cursor, body.has-pro-cursor a, body.has-pro-cursor button { cursor:
   border: 1px solid rgba(103,232,249,.34);
   background: rgba(32,216,255,.018);
   box-shadow: 0 0 24px rgba(32,216,255,.11);
+  -webkit-backdrop-filter: blur(.5px);
   backdrop-filter: blur(.5px);
 }
 
@@ -496,6 +500,7 @@ body.has-pro-cursor, body.has-pro-cursor a, body.has-pro-cursor button { cursor:
   inset: 0;
   background-image: linear-gradient(rgba(56,189,248,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,.05) 1px, transparent 1px);
   background-size: 52px 52px;
+  -webkit-mask-image: radial-gradient(circle at 55% 36%, black, transparent 80%);
   mask-image: radial-gradient(circle at 55% 36%, black, transparent 80%);
 }
 .hero-visual-pro::after {
@@ -544,6 +549,7 @@ body.has-pro-cursor, body.has-pro-cursor a, body.has-pro-cursor button { cursor:
   border-radius:999px;
   border:1px solid rgba(148,163,184,.22);
   background:rgba(8,13,25,.72);
+  -webkit-backdrop-filter:blur(16px);
   backdrop-filter:blur(16px);
   color:#e0f2fe;
   font-weight:950;
@@ -842,6 +848,7 @@ select:invalid, select option[value=""] {
   overscroll-behavior: contain;
   padding-top: 20px;
   background: rgba(6,16,28,.98) !important;
+  -webkit-backdrop-filter: blur(22px);
   backdrop-filter: blur(22px);
 }
 .mobile-nav-fullscreen a {
@@ -1498,6 +1505,7 @@ form.glass-card {
     gap: 10px !important;
     padding: 104px 22px 28px !important;
     background: rgba(6, 16, 28, .98) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
     backdrop-filter: blur(24px) !important;
     overflow-y: auto !important;
   }
@@ -1649,5 +1657,175 @@ form.glass-card {
   .scroll-progress-ring {
     width: 48px !important;
     height: 48px !important;
+  }
+}
+
+
+/* Final targeted mobile polish: uniform contact spacing, clean scroll button, browser CSS compatibility */
+@media (max-width: 640px) {
+  html,
+  body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Keep the contact section aligned like the service/project cards: equal side gutter. */
+  #contact {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: clip !important;
+  }
+
+  #contact > .container {
+    width: calc(100% - 32px) !important;
+    max-width: 430px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  #contact .section-kicker,
+  #contact .section-title,
+  #contact .section-subtitle {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    text-align: center !important;
+  }
+
+  #contact .grid {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: visible !important;
+  }
+
+  #contact .glass-card,
+  #contact .contact-form-card,
+  #contact form.contact-form-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: hidden !important;
+    border-radius: 24px !important;
+  }
+
+  #contact form.contact-form-card {
+    padding: 22px 18px !important;
+  }
+
+  #contact input,
+  #contact select,
+  #contact textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    font-size: 16px !important;
+  }
+
+  /* Turnstile is a fixed-size third-party widget. Center a scaled widget inside the card without clipping. */
+  #contact .turnstile-shell {
+    --turnstile-mobile-scale: .92;
+    --turnstile-mobile-width: 276px;
+    width: var(--turnstile-mobile-width) !important;
+    max-width: 100% !important;
+    min-height: 66px !important;
+    margin: 22px auto 0 !important;
+    overflow: visible !important;
+  }
+
+  #contact .turnstile-inner {
+    width: 300px !important;
+    max-width: 300px !important;
+    height: 70px !important;
+    margin: 0 !important;
+    transform: scale(var(--turnstile-mobile-scale)) !important;
+    transform-origin: left top !important;
+  }
+
+  #contact .turnstile-container,
+  #contact .turnstile-container iframe,
+  #contact .turnstile-container > div {
+    width: 300px !important;
+    max-width: 300px !important;
+    min-width: 300px !important;
+    min-height: 70px !important;
+    overflow: visible !important;
+  }
+
+  #contact .turnstile-shell p {
+    width: min(300px, 100%) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: left !important;
+    line-height: 1.45 !important;
+  }
+
+  /* Mobile scroll-to-top: remove the oversized progress ring and keep a clean aligned circular button. */
+  .scroll-top-button.scroll-top-v14,
+  .scroll-top-button {
+    width: 54px !important;
+    height: 54px !important;
+    right: 14px !important;
+    bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    z-index: 65 !important;
+  }
+
+  .scroll-progress-ring {
+    display: none !important;
+  }
+
+  .scroll-top-inner {
+    inset: 0 !important;
+    width: 54px !important;
+    height: 54px !important;
+    border: 4px solid rgba(32, 216, 255, .95) !important;
+    background: radial-gradient(circle at 32% 24%, #22d3ee, #2563eb 74%) !important;
+    box-shadow: 0 0 28px rgba(32, 216, 255, .42), inset 0 1px 0 rgba(255,255,255,.24) !important;
+  }
+
+  .scroll-top-inner svg {
+    width: 19px !important;
+    height: 19px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  #contact > .container {
+    width: calc(100% - 28px) !important;
+    max-width: 420px !important;
+  }
+
+  #contact form.contact-form-card {
+    padding: 20px 16px !important;
+  }
+
+  #contact .turnstile-shell {
+    --turnstile-mobile-scale: .88;
+    --turnstile-mobile-width: 264px;
+  }
+
+  .scroll-top-button.scroll-top-v14,
+  .scroll-top-button {
+    width: 50px !important;
+    height: 50px !important;
+    right: 12px !important;
+    bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .scroll-top-inner {
+    width: 50px !important;
+    height: 50px !important;
   }
 }
