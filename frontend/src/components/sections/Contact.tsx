@@ -69,7 +69,7 @@ export function Contact() {
       reset(defaultValues);
       setTurnstileToken('');
       setTurnstileResetKey((value) => value + 1);
-      setToast({ type: 'success', message: 'Thank you for reaching out. Your message has been submitted successfully. I will get back to you soon.' });
+      setToast({ type: 'success', message: 'Message submitted successfully. I will get back to you soon.' });
     } catch (error) {
       setTurnstileToken('');
       setTurnstileResetKey((value) => value + 1);
@@ -92,7 +92,7 @@ export function Contact() {
             </div>
           </motion.div>
 
-          <motion.form onSubmit={handleSubmit(onSubmit)} initial={{ opacity: 0, x: 36 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="glass-card p-7">
+          <motion.form onSubmit={handleSubmit(onSubmit)} initial={{ opacity: 0, x: 36 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="glass-card contact-form-card p-7">
             <input tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" {...register('website')} />
             <div className="grid gap-5 md:grid-cols-2">
               <Field label="Your Name" error={errors.name?.message}><input {...register('name')} placeholder="Your name" /></Field>

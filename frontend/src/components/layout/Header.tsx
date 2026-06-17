@@ -172,8 +172,21 @@ export function Header() {
             <button className="focus-ring lg:hidden" onClick={() => setOpen((v) => !v)} aria-label="Open navigation">{open ? <X /> : <Menu />}</button>
           </div>
         </nav>
-        {open && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mobile-nav mobile-nav-fullscreen border-t border-white/10 bg-[#06101c] px-5 pb-8 lg:hidden">{navLinks.map((l) => <a onClick={() => setOpen(false)} className="block rounded-xl px-4 py-3 font-bold text-slate-200" key={l.href} href={l.href}>{l.label}</a>)}</motion.div>}
       </motion.header>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="mobile-nav mobile-nav-fullscreen border-t border-white/10 bg-[#06101c] px-5 pb-8 lg:hidden"
+          >
+            {navLinks.map((l) => (
+              <a onClick={() => setOpen(false)} className="block rounded-xl px-4 py-3 font-bold text-slate-200" key={l.href} href={l.href}>{l.label}</a>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <AnimatePresence>{searchOpen && <SearchModal onClose={() => setSearchOpen(false)} />}</AnimatePresence>
     </>
   );
