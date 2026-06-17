@@ -1537,3 +1537,117 @@ form.glass-card {
 @media (max-width: 340px) {
   :root { --turnstile-scale: .78; }
 }
+
+/* Final mobile-only polish: contact spacing and compact scroll-to-top button */
+@media (max-width: 640px) {
+  /* keep every section inside the viewport */
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Contact section: equal left/right spacing on mobile */
+  #contact {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  #contact > .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-inline: auto !important;
+    padding-left: 22px !important;
+    padding-right: 22px !important;
+  }
+
+  #contact .section-subtitle {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  #contact .grid,
+  #contact .contact-form-card,
+  #contact .glass-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  #contact form.contact-form-card {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* keep Cloudflare Turnstile aligned and inside contact card */
+  #contact .turnstile-shell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: visible !important;
+  }
+
+  #contact .turnstile-inner {
+    transform-origin: left top !important;
+  }
+
+  /* Smaller, cleaner back-to-top button on mobile */
+  .scroll-top-button.scroll-top-v14,
+  .scroll-top-button {
+    width: 50px !important;
+    height: 50px !important;
+    right: 16px !important;
+    bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+    z-index: 65 !important;
+  }
+
+  .scroll-progress-ring {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  .scroll-progress-track,
+  .scroll-progress-fill {
+    stroke-width: 4 !important;
+  }
+
+  .scroll-top-inner {
+    inset: 7px !important;
+  }
+
+  .scroll-top-inner svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  #contact > .container {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  #contact form.contact-form-card {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .scroll-top-button.scroll-top-v14,
+  .scroll-top-button {
+    width: 48px !important;
+    height: 48px !important;
+    right: 14px !important;
+    bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .scroll-progress-ring {
+    width: 48px !important;
+    height: 48px !important;
+  }
+}
