@@ -3,8 +3,8 @@ package com.nikhilwabale.portfolioapi.service.impl;
 import com.nikhilwabale.portfolioapi.config.SecurityProperties;
 import com.nikhilwabale.portfolioapi.config.TurnstileProperties;
 import com.nikhilwabale.portfolioapi.service.TurnstileService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.JacksonException;
@@ -22,7 +22,6 @@ import java.time.Duration;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class TurnstileServiceImpl implements TurnstileService {
 
     private static final String SITEVERIFY_ENDPOINT = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
@@ -31,10 +30,20 @@ public class TurnstileServiceImpl implements TurnstileService {
     private final SecurityProperties securityProperties;
     private final Environment environment;
     private final ObjectMapper objectMapper;
+    private final HttpClient httpClient;
 
-    private final HttpClient httpClient = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(8))
-            .build();
+    public TurnstileServiceImpl(
+            TurnstileProperties turnstileProperties,
+            SecurityProperties securityProperties,
+            Environment environment,
+            ObjectMapper objectMapper,
+            @Qualifier("turnstileHttpClient") HttpClient httpClient) {
+        this.turnstileProperties = turnstileProperties;
+        this.securityProperties = securityProperties;
+        this.environment = environment;
+        this.objectMapper = objectMapper;
+        this.httpClient = httpClient;
+    }
 
     @Override
     public boolean verify(String token, String remoteIp) {

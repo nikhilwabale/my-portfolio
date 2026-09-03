@@ -35,4 +35,22 @@ public record ContactRequest(
         // Honeypot field. Real users never fill it. Bots often do.
         String website
 ) {
+    /**
+     * The frontend's Zod schema trims name/email/subject/message before checking their
+     * length (z.string().trim().min(...)), so a whitespace-padded value like "   a" is
+     * rejected client-side. Bean Validation runs against the fields as constructed, so
+     * trimming here - before validation sees them - keeps that same rule server-side
+     * instead of validating the raw, untrimmed length. inquiryType and website are left
+     * alone: the frontend doesn't trim those either.
+     */
+    public ContactRequest {
+        name = strip(name);
+        email = strip(email);
+        subject = strip(subject);
+        message = strip(message);
+    }
+
+    private static String strip(String value) {
+        return value == null ? null : value.strip();
+    }
 }

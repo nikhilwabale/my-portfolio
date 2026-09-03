@@ -3,8 +3,8 @@ package com.nikhilwabale.portfolioapi.service.impl;
 import com.nikhilwabale.portfolioapi.config.ResendProperties;
 import com.nikhilwabale.portfolioapi.entity.ContactMessage;
 import com.nikhilwabale.portfolioapi.service.EmailService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
@@ -24,7 +24,6 @@ import java.util.Map;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ResendEmailService implements EmailService {
 
     private static final String RESEND_ENDPOINT = "https://api.resend.com/emails";
@@ -33,10 +32,16 @@ public class ResendEmailService implements EmailService {
 
     private final ResendProperties resendProperties;
     private final ObjectMapper objectMapper;
+    private final HttpClient httpClient;
 
-    private final HttpClient httpClient = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(10))
-            .build();
+    public ResendEmailService(
+            ResendProperties resendProperties,
+            ObjectMapper objectMapper,
+            @Qualifier("resendHttpClient") HttpClient httpClient) {
+        this.resendProperties = resendProperties;
+        this.objectMapper = objectMapper;
+        this.httpClient = httpClient;
+    }
 
     @Override
     public EmailResult sendContactNotification(ContactMessage message) {

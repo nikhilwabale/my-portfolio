@@ -88,6 +88,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<!-- TestRestTemplate's auto-configuration needs RestTemplateBuilder, which Spring
+			     Boot 4's modularization split into its own module - not otherwise pulled in
+			     since production code uses java.net.http.HttpClient directly, not RestTemplate. -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-restclient</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jackson-test</artifactId>
 			<scope>test</scope>
