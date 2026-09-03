@@ -142,7 +142,10 @@ export function TurnstileWidget({ siteKey, resetKey = 0, onTokenChange, onError 
       try {
         window.turnstile.reset(widgetIdRef.current);
       } catch {
-        setReloadKey((value) => value + 1);
+        // Deferred so the effect body itself has no synchronous setState call
+        // (react-hooks/set-state-in-effect) - same recovery, just scheduled
+        // a tick later instead of cascading within this render pass.
+        queueMicrotask(() => setReloadKey((value) => value + 1));
       }
       verifiedRef.current = false;
       tokenCallbackRef.current('');
@@ -161,7 +164,7 @@ export function TurnstileWidget({ siteKey, resetKey = 0, onTokenChange, onError 
   return (
     <div className="turnstile-shell mt-5 space-y-3" aria-label="Security verification">
       <div className="turnstile-inner">
-        <div ref={containerRef} key={`${resetKey}-${reloadKey}`} className="turnstile-container min-h-[70px]" />
+        <div ref={containerRef} key={`${resetKey}-${reloadKey}`} className="turnstile-container min-h-17.5" />
       </div>
       {status === 'loading' && (
         <p className="text-xs font-semibold text-slate-400">Loading security verification...</p>

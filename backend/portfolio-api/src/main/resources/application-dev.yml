@@ -1,0 +1,12 @@
+# Activated with SPRING_PROFILES_ACTIVE=dev (or when running locally with no profile set,
+# since Spring falls back to "default" which behaves the same as no-Turnstile-required here).
+spring:
+  jpa:
+    show-sql: true
+
+security:
+  enable-turnstile-in-development: false
+
+logging:
+  level:
+    com.nikhilwabale.portfolioapi: DEBUG

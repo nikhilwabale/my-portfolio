@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: portfolio-api
+  jpa:
+    open-in-view: false
+    hibernate:
+      # Table already exists in Neon (see database/NeonPostgreSQL.sql). "update" will only
+      # create it if missing - never alters/drops existing columns - so the existing schema
+      # from the ASP.NET Core backend is reused untouched.
+      ddl-auto: update
+    properties:
+      hibernate:
+        # Preserves exact PascalCase table/column names ("ContactMessages", "Name", ...)
+        # the way Npgsql/EF Core originally created them - Postgres identifiers are
+        # case-sensitive once quoted.
+        globally_quoted_identifiers: true
+    show-sql: false
+
+server:
+  port: ${PORT:8080}
+  # Trust X-Forwarded-For / X-Forwarded-Proto from Render's proxy so client IPs used for
+  # rate limiting and audit logging are the real visitor IP, not Render's internal proxy IP.
+  forward-headers-strategy: framework
+
+# Structured config - also reachable via flat env vars through Spring's relaxed binding,
+# e.g. RESEND_API_KEY -> resend.api-key, TURNSTILE_SECRET_KEY -> turnstile.secret-key.
+resend:
+  api-key: ${RESEND_API_KEY:}
+  from-email: ${RESEND_FROM_EMAIL:onboarding@resend.dev}
+  to-email: ${RESEND_TO_EMAIL:wablenikhil2000@gmail.com}
+
+turnstile:
+  site-key: ${TURNSTILE_SITE_KEY:}
+  secret-key: ${TURNSTILE_SECRET_KEY:}
+
+security:
+  require-turnstile-in-production: true
+  enable-turnstile-in-development: false
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,https://my-portfolio-lake-one.vercel.app}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+logging:
+  level:
+    root: INFO
+    com.nikhilwabale.portfolioapi: INFO

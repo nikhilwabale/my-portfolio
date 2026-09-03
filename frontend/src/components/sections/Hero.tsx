@@ -73,7 +73,7 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="hero-section relative flex min-h-screen items-center overflow-hidden pt-24"
+      className="hero-section relative flex sm:min-h-screen items-center overflow-hidden pt-24"
     >
       <div className="absolute inset-0 -z-10 opacity-85 grid-bg" />
       <div className="hero-social-rail" aria-label="Social links">
@@ -110,7 +110,7 @@ export function Hero() {
             transition={{ duration: 0.55, delay: 0.22 }}
             className="hero-kicker"
           >
-            // Portfolio of
+            {'// Portfolio of'}
           </motion.p>
 
           <motion.h1
@@ -139,7 +139,7 @@ export function Hero() {
             transition={{ delay: 0.42, duration: 0.55 }}
             className="hero-role hero-role-fixed min-h-[4rem] md:min-h-[5rem] lg:min-h-[6rem]"
           >
-            <span className="comment-mark">//</span>
+            <span className="comment-mark">{'//'}</span>
             <AnimatedRole />
           </motion.div>
 
