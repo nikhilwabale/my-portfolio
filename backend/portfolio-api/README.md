@@ -45,9 +45,11 @@ altered as part of this migration.
 
 ## Environment variables
 
-None of these are committed anywhere - set them as real OS/shell environment variables, or in
-your IDE's run configuration. Copy `.env.example` to `.env` for local reference only; Spring Boot
-does not auto-load `.env` files.
+None of these are committed anywhere. Copy `.env.example` to `.env` and fill in the real values -
+`springboot4-dotenv` (see `pom.xml`) loads it automatically on startup, no manual export needed.
+Real OS/shell environment variables (or an IDE run configuration) still take precedence over
+`.env` if both are set, which is what actually happens in production: Render sets real env vars
+from its dashboard, and no `.env` file is ever deployed there (it's gitignored).
 
 | Variable | Required | Purpose |
 |---|---|---|
@@ -67,7 +69,7 @@ fallback chain needed.
 ## Running locally
 
 ```bash
-export DATABASE_URL="postgres://user:pass@your-neon-host/neondb?sslmode=require"
+cp .env.example .env   # then fill in DATABASE_URL and any other secrets you need
 ./mvnw spring-boot:run
 ```
 
@@ -75,7 +77,9 @@ This runs with no active profile, which behaves like `dev`: Swagger UI is availa
 `http://localhost:8080/swagger-ui.html`, and Turnstile verification is bypassed unless
 `SECURITY_ENABLE_TURNSTILE_IN_DEVELOPMENT=true` is set.
 
-To exercise the full production-like path locally (Turnstile enforced, Swagger disabled):
+To exercise the full production-like path locally (Turnstile enforced, Swagger disabled) without
+changing your everyday `.env`, override it for one run with real env vars - these take precedence
+over `.env`:
 
 ```bash
 export SPRING_PROFILES_ACTIVE=prod

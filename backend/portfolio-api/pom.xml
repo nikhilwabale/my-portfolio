@@ -17,6 +17,7 @@
 		<java.version>21</java.version>
 		<springdoc.version>3.1.0</springdoc.version>
 		<bucket4j.version>8.19.0</bucket4j.version>
+		<spring-dotenv.version>5.1.0</spring-dotenv.version>
 		<!-- Spring Boot 4.1.1's own BOM manages Tomcat 11.0.24, which is one patch behind
 		     11.0.25 (Aug 2026) - that release fixed CVE-2026-68569 (authentication bypass)
 		     and an HTTP/2 DoS issue. Override until a Spring Boot release picks it up. -->
@@ -69,6 +70,17 @@
 			<groupId>com.bucket4j</groupId>
 			<artifactId>bucket4j_jdk17-core</artifactId>
 			<version>${bucket4j.version}</version>
+		</dependency>
+
+		<!-- Auto-loads backend/portfolio-api/.env into the Spring Environment on startup
+		     (an EnvironmentPostProcessor, no code changes needed) so DATABASE_URL etc. don't
+		     need manual exporting every session. Real OS env vars still take precedence over
+		     .env values, so this has no effect on Render, where secrets come from its
+		     dashboard, not a committed/deployed .env file. -->
+		<dependency>
+			<groupId>me.paulschwarz</groupId>
+			<artifactId>springboot4-dotenv</artifactId>
+			<version>${spring-dotenv.version}</version>
 		</dependency>
 
 		<dependency>

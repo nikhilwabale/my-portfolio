@@ -18,8 +18,8 @@ export const metadata: Metadata = {
     'React Developer Pune',
     'Next.js Developer',
     'Angular Developer',
-    'ASP.NET Core Developer',
-    'C# Developer',
+    'Spring Boot Developer',
+    'Java Developer',
     'SQL Server Developer',
     'Freelance Web Developer India',
     'Portfolio Developer'
@@ -61,11 +61,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     url: site.seo.url,
     image: `${site.seo.url}${site.seo.image}`,
     sameAs: [site.socials.github, site.socials.linkedin, site.socials.x],
-    knowsAbout: ['React.js', 'Next.js', 'Angular', 'ASP.NET Core', 'C#', 'SQL Server', 'Flutter', 'Freelance Web Development', 'REST APIs', 'JWT Authentication'],
+    knowsAbout: ['React.js', 'Next.js', 'Angular', 'Java', 'Spring Boot', 'SQL Server', 'Flutter', 'Freelance Web Development', 'REST APIs', 'JWT Authentication'],
     makesOffer: [
       { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Full Stack Web Development' } },
       { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Freelance Landing Page Development' } },
-      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'ASP.NET Core API Development' } }
+      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Spring Boot API Development' } }
     ]
   };
 

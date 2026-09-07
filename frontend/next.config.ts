@@ -25,14 +25,24 @@ function backendOrigin(): string | null {
 // with per-animation-frame values (82 confirmed CSP violations with style-src 'self' alone).
 // CSP has no nonce/hash mechanism that can allow-list a value that changes every frame, so
 // there is no stricter alternative while this site uses Framer Motion for animation.
-function buildCsp(): string {
+//
+// script-src also adds 'unsafe-eval' in development only: Next.js/Turbopack + React's dev-mode
+// debugging features (Fast Refresh, component stack traces) legitimately use eval() to build
+// them, and Next.js's own dev server confirms this itself ("React will never use eval() in
+// production mode") - so this is dev-tooling requiring it, not application code, and it's
+// scoped out of the production policy entirely rather than loosened for everyone.
+function buildCsp(isDev: boolean): string {
   const connectSrc = ["'self'", 'https://challenges.cloudflare.com', backendOrigin()]
     .filter(Boolean)
     .join(' ');
 
+  const scriptSrc = isDev
+    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com"
+    : "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com";
+
   return [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
+    scriptSrc,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:",
     "font-src 'self'",
@@ -57,7 +67,7 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          { key: 'Content-Security-Policy', value: buildCsp() },
+          { key: 'Content-Security-Policy', value: buildCsp(process.env.NODE_ENV === 'development') },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },

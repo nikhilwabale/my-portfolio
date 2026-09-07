@@ -18,11 +18,11 @@ type SearchItem = {
 const normalizeSearch = (value: string) => value.toLowerCase().replace(/[^a-z0-9+#.\s-]/g, ' ').replace(/\s+/g, ' ').trim();
 
 const baseSearchable: SearchItem[] = [
-  { label: 'Home', href: '#home', type: 'Section', desc: 'Portfolio introduction, availability, resume and hero overview', keywords: 'home portfolio nikhil wabale full stack developer .net developer freelance web app builder resume' },
-  { label: 'About Nikhil', href: '#about', type: 'Section', desc: 'Profile summary, experience highlights and professional background', keywords: 'about nikhil profile pune software engineer full stack developer react asp.net core' },
+  { label: 'Home', href: '#home', type: 'Section', desc: 'Portfolio introduction, availability, resume and hero overview', keywords: 'home portfolio nikhil wabale full stack developer java spring boot developer freelance web app builder resume' },
+  { label: 'About Nikhil', href: '#about', type: 'Section', desc: 'Profile summary, experience highlights and professional background', keywords: 'about nikhil profile pune software engineer full stack developer react java spring boot' },
   { label: 'Work Experience', href: '#experience', type: 'Section', desc: 'Professional journey across internships, production systems and business delivery', keywords: 'experience work technvil pathlogics frontend developer intern software engineer full stack developer' },
   { label: 'Projects', href: '#projects', type: 'Section', desc: 'Asset Management System, AMS App and TechCart case studies', keywords: 'projects asset management system ams app techcart portfolio case study' },
-  { label: 'Skills', href: '#skills', type: 'Section', desc: 'React, Next.js, Angular, ASP.NET Core, C#, SQL Server and deployment-ready stack', keywords: 'skills tech stack react next angular asp.net core c# sql server postgresql oracle flutter azure' },
+  { label: 'Skills', href: '#skills', type: 'Section', desc: 'React, Next.js, Angular, Java, Spring Boot, SQL Server and deployment-ready stack', keywords: 'skills tech stack react next angular java spring boot sql server postgresql oracle flutter aws azure' },
   { label: 'Education', href: '#education', type: 'Section', desc: 'BE Information Technology, academic background and achievements', keywords: 'education engineering sinhgad hsc ssc information technology cgpa' },
   { label: 'Services', href: '#freelance', type: 'Section', desc: 'Full-stack web applications, dashboards, mobile apps and business websites', keywords: 'services freelance web application dashboard mobile application landing page business website' },
   { label: 'Contact', href: '#contact', type: 'Section', desc: 'Send an inquiry for jobs, freelance work or project discussions', keywords: 'contact email phone pune inquiry form captcha turnstile resend' }
@@ -116,7 +116,7 @@ function SearchModal({ onClose }: { onClose: () => void }) {
       <motion.div className="search-modal" initial={{ y: -28, opacity: 0, scale: 0.98 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: -18, opacity: 0, scale: 0.98 }} onClick={(e) => e.stopPropagation()}>
         <div className="search-modal-head">
           <Search size={24} className="text-cyan-300" />
-          <input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search React, .NET, projects, skills..." />
+          <input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search React, Java, projects, skills..." />
           <kbd>ESC</kbd>
           <button onClick={onClose} aria-label="Close search"><X /></button>
         </div>
@@ -128,7 +128,7 @@ function SearchModal({ onClose }: { onClose: () => void }) {
               <span className="block text-sm font-normal text-slate-500">{item.desc}</span>
             </a>
           ))}
-          {results.length === 0 && <p className="rounded-xl border border-white/10 p-4 text-slate-400">No matching result found. Try React, .NET, AMS, SQL, Flutter, contact or resume.</p>}
+          {results.length === 0 && <p className="rounded-xl border border-white/10 p-4 text-slate-400">No matching result found. Try React, Java, AMS, SQL, Flutter, contact or resume.</p>}
         </div>
       </motion.div>
     </motion.div>

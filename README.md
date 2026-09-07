@@ -43,7 +43,7 @@ pnpm dev                            # http://localhost:3000
 ```bash
 # Directly (needs a Postgres connection string, e.g. from Neon):
 cd backend/portfolio-api
-export DATABASE_URL="postgres://user:pass@your-neon-host/neondb?sslmode=require"
+cp .env.example .env                # then fill in DATABASE_URL - loaded automatically, no export needed
 ./mvnw spring-boot:run              # http://localhost:8080
 
 # Or via Docker, against a local throwaway Postgres (no Neon needed):

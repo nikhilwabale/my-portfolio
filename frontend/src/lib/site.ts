@@ -12,8 +12,8 @@ export const site = {
   },
   seo: {
     url: process.env.NEXT_PUBLIC_SITE_URL || 'https://nikhilwabale.dev',
-    title: 'Nikhil Wabale | Full Stack Developer | React, Next.js, ASP.NET Core',
-    description: 'Portfolio of Nikhil Wabale, a Pune-based Full Stack Developer and freelance web developer building scalable React, Next.js, Angular, ASP.NET Core and SQL Server applications.',
+    title: 'Nikhil Wabale | Full Stack Developer | React, Next.js, Spring Boot',
+    description: 'Portfolio of Nikhil Wabale, a Pune-based Full Stack Developer and freelance web developer building scalable React, Next.js, Angular, Spring Boot and SQL Server applications.',
     image: '/og.png'
   }
 };

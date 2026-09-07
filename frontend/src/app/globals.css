@@ -22,6 +22,11 @@
 }
 html {
   scroll-behavior: smooth;
+  /* The site header is a fixed 80px bar at every breakpoint (Header.tsx's h-20). Section padding
+     alone doesn't always clear that (it drops to 72px between 641-900px wide), so anchor jumps
+     and scrollIntoView() calls were landing with the header covering the first line of the
+     target section - most visible on landscape phones, whose width commonly falls in that range. */
+  scroll-padding-top: 96px;
 }
 body {
   margin: 0;
@@ -219,17 +224,20 @@ textarea {
   background-clip: text;
   color: transparent;
 }
+/* Height is reserved in em units so it always scales with the responsive font-size below and
+   reliably covers 2 lines of wrapped text at every breakpoint - see the removed min-height/
+   font-size overrides throughout this file that used to fight over this instead. */
 .hero-role {
   margin-top: 30px;
   color: #ecfeff;
-  font-size: clamp(26px, 3.1vw, 42px);
-  line-height: 1.18;
+  font-size: clamp(21px, 3.1vw, 42px);
+  line-height: 1.3;
   font-weight: 900;
-  min-height: 58px;
+  min-height: calc(1.3em * 2);
   display: flex;
-  align-items: center;
-  white-space: nowrap;
-  overflow: hidden;
+  align-items: flex-start;
+  white-space: normal;
+  overflow: visible;
 }
 .comment-mark {
   color: rgba(148, 163, 184, 0.55);
@@ -240,7 +248,14 @@ textarea {
   color: #67e8f9;
   text-shadow: 0 0 28px rgba(32, 216, 255, 0.16);
   display: inline-block;
-  min-width: min(580px, 100%);
+}
+/* Below ~336px, the font-size floor above is still large enough that the longest rotating
+   phrase needs a 3rd wrapped line - measured empirically, not guessed - so reserve one more
+   line there specifically instead of over-reserving space at every other width. */
+@media (max-width: 336px) {
+  .hero-role {
+    min-height: calc(1.3em * 3);
+  }
 }
 .typing-cursor {
   margin-left: 4px;
@@ -489,14 +504,6 @@ body.has-pro-cursor button {
     font-size: clamp(56px, 17vw, 78px);
     letter-spacing: -0.06em;
   }
-  .hero-role {
-    font-size: 22px;
-    min-height: 58px;
-    white-space: normal;
-  }
-  .role-type {
-    min-width: auto;
-  }
   .hero-description {
     font-size: 17px;
   }
@@ -634,12 +641,9 @@ body.has-pro-cursor button {
   color: #f8fafc;
 }
 .hero-role-fixed {
-  min-height: 66px;
   width: min(720px, 100%);
-  align-items: flex-start;
 }
 .role-type {
-  min-width: 620px;
   max-width: 100%;
 }
 .hero-micro-grid {
@@ -1035,11 +1039,6 @@ body.has-pro-cursor button {
   .hero-title-pro {
     font-size: clamp(62px, 18vw, 92px);
   }
-  .hero-role-fixed {
-    white-space: normal;
-    min-height: 96px;
-    font-size: 26px;
-  }
   .hero-micro-grid {
     grid-template-columns: 1fr;
   }
@@ -1220,12 +1219,6 @@ body.has-pro-cursor button {
   background-clip: text;
   color: transparent;
 }
-.hero-role-fixed {
-  min-height: 68px;
-}
-.role-type {
-  min-width: 650px;
-}
 .hero-visual-pro {
   position: relative;
   min-height: 640px;
@@ -1367,6 +1360,12 @@ body.has-pro-cursor button {
   transform-origin: 0%;
   background: linear-gradient(90deg, var(--cyan), var(--blue), var(--purple));
   box-shadow: 0 0 22px rgba(32, 216, 255, 0.45);
+}
+/* Scrolling is locked (body overflow:hidden) while the mobile menu is open, and the menu's
+   z-index now sits below the header on purpose (see .mobile-nav-fullscreen) - without this the
+   scroll-to-top button would float on top of the open menu instead of staying hidden behind it. */
+body:has(.mobile-nav-fullscreen) .scroll-top-button {
+  display: none;
 }
 .scroll-top-button {
   position: fixed;
@@ -1815,7 +1814,6 @@ select {
   align-items: center;
 }
 .hero-role-fixed {
-  min-height: 84px;
   display: flex;
   align-items: flex-start;
   overflow: visible;
@@ -1947,10 +1945,6 @@ select option:disabled {
   }
 }
 @media (max-width: 768px) {
-  .hero-role-fixed {
-    min-height: 112px;
-    font-size: 25px;
-  }
   .hero-visual-profile {
     min-height: 560px;
   }
@@ -1965,12 +1959,10 @@ select option:disabled {
 
 /* Final UX/content polish requested by Nikhil */
 .hero-role-fixed {
-  min-height: 96px;
   align-items: flex-start;
 }
 .role-type {
   max-width: min(100%, 760px);
-  line-height: 1.28;
 }
 .hero-description {
   max-width: 780px;
@@ -2022,9 +2014,6 @@ select option[value=''] {
 @media (max-width: 720px) {
   .freelance-grid {
     grid-template-columns: 1fr;
-  }
-  .hero-role-fixed {
-    min-height: 120px;
   }
 }
 
@@ -2203,8 +2192,6 @@ form.glass-card {
   }
   .hero-role,
   .hero-role-fixed {
-    min-height: 92px !important;
-    font-size: clamp(24px, 7.4vw, 32px) !important;
     white-space: normal !important;
     overflow: visible !important;
     align-items: flex-start !important;
@@ -2264,7 +2251,6 @@ form.glass-card {
     font-size: clamp(72px, 10vw, 112px) !important;
   }
   .hero-role-fixed {
-    min-height: 82px !important;
     white-space: normal !important;
     overflow: visible !important;
   }
@@ -2701,11 +2687,8 @@ form.glass-card {
   .hero-role-fixed {
     width: 100% !important;
     max-width: 100% !important;
-    min-height: 78px !important;
     justify-content: flex-start !important;
     align-items: flex-start !important;
-    font-size: clamp(24px, 7vw, 30px) !important;
-    line-height: 1.22 !important;
     margin-left: 0 !important;
     text-align: left !important;
   }
@@ -2841,7 +2824,10 @@ form.glass-card {
   .mobile-nav-fullscreen {
     position: fixed !important;
     inset: 0 !important;
-    z-index: 80 !important;
+    /* Must stay below the header's z-50 (site-header, Header.tsx) - the header carries the
+       menu's own close (X) button, and a higher z-index here was covering it completely,
+       leaving the open menu with no visible way to close it on phones under 641px wide. */
+    z-index: 45 !important;
     height: 100dvh !important;
     width: 100vw !important;
     display: flex !important;

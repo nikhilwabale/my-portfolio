@@ -18,11 +18,11 @@ import { useEffect, useMemo, useState } from 'react';
 function AnimatedRole() {
   const roles = useMemo(
     () => [
-      'Building Enterprise Solutions',
-      'Creating AI-Powered Applications',
-      'Crafting Modern Web Experiences',
-      'Transforming Ideas into Products',
-      'Building Scalable Full-Stack Applications'
+      'Building Full-Stack Web Applications',
+      'Automating Cloud Infrastructure',
+      'Crafting Modern Frontend Experiences',
+      'Engineering AI-Powered Solutions',
+      'Delivering Production-Ready Software'
     ],
     []
   );
@@ -137,7 +137,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.42, duration: 0.55 }}
-            className="hero-role hero-role-fixed min-h-[4rem] md:min-h-[5rem] lg:min-h-[6rem]"
+            className="hero-role hero-role-fixed"
           >
             <span className="comment-mark">{'//'}</span>
             <AnimatedRole />
