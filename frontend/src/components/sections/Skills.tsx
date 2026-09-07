@@ -21,7 +21,7 @@ const groups = [
     title: 'Backend & APIs',
     items: [
       { name: 'Java / Spring Boot', level: 88 },
-      { name: 'C# / ASP.NET Core', level: 86 },
+      { name: 'Spring Framework', level: 86 },
       { name: 'REST APIs', level: 90 },
       { name: 'Spring Security / JWT', level: 82 }
     ],
@@ -50,12 +50,12 @@ const groups = [
     icon: Cloud,
     title: 'Cloud & DevOps',
     items: [
+      { name: 'AWS', level: 78 },
       { name: 'Docker', level: 80 },
-      { name: 'Azure', level: 74 },
       { name: 'Kubernetes', level: 68 },
       { name: 'CI/CD', level: 72 }
     ],
-    tags: ['Docker Compose', 'GitHub Actions', 'Cloud Deployment', 'Containerization']
+    tags: ['Azure', 'Docker Compose', 'GitHub Actions', 'Containerization']
   },
   {
     icon: Brain,

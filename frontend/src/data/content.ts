@@ -61,6 +61,7 @@ export const experience = [
       'Hibernate',
       'SQL Server',
       'Flutter',
+      'AWS',
       'Azure',
       'CI/CD',
       'Generative AI'
@@ -87,7 +88,7 @@ export const projects = [
     ],
     result:
       'Created a scalable full-stack foundation for enterprise asset tracking, workflow visibility and future cloud deployment.',
-    stack: ['React.js', 'Java','Spring Boot', 'Spring Data JPA', 'Hibernate', 'SQL Server','REST API', 'JWT', 'RBAC','Azure']
+    stack: ['React.js', 'Java','Spring Boot', 'Spring Data JPA', 'Hibernate', 'SQL Server','REST API', 'JWT', 'RBAC','AWS']
   },
   {
     title: 'AMS App',
@@ -130,7 +131,7 @@ export const projects = [
 ];
 
 export const skillGroups = [
-  { icon: Code2, title: 'Languages', skills: ['C#', 'TypeScript', 'JavaScript', 'SQL', 'Dart'] },
+  { icon: Code2, title: 'Languages', skills: ['Java', 'TypeScript', 'JavaScript', 'SQL', 'Dart'] },
   {
     icon: Globe2,
     title: 'Frontend',
@@ -140,7 +141,7 @@ export const skillGroups = [
     icon: Server,
     title: 'Backend',
     skills: [
-      'ASP.NET Core',
+      'Spring Boot',
       'REST APIs',
       'Web API',
       'JWT Auth',
@@ -158,7 +159,7 @@ export const skillGroups = [
   {
     icon: Wrench,
     title: 'Tools & Platforms',
-    skills: ['Azure', 'CI/CD', 'Git', 'GitHub', 'Postman', 'Swagger', 'Visual Studio', 'VS Code']
+    skills: ['AWS', 'Azure', 'CI/CD', 'Git', 'GitHub', 'Postman', 'Swagger', 'Visual Studio', 'VS Code']
   }
 ];
 
@@ -211,7 +212,7 @@ export const freelanceServices = [
   {
     icon: Globe2,
     title: 'Full Stack Web Application',
-    text: 'End-to-end web applications with React or Next.js frontend, ASP.NET Core APIs, relational database and deployment-ready structure.'
+    text: 'End-to-end web applications with React or Next.js frontend, Spring Boot APIs, relational database and deployment-ready structure.'
   },
   {
     icon: Smartphone,

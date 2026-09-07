@@ -1,0 +1,50 @@
+name: portfolio-api-local
+
+# Local development only: backend + a throwaway Postgres to develop/test against without
+# touching the real Neon database. The frontend and Neon stay external on purpose - run the
+# frontend with `pnpm dev` against this backend (NEXT_PUBLIC_CONTACT_API_URL=http://localhost:7000/api/contact),
+# and point DATABASE_URL at Neon instead of this service whenever you actually need Neon's data.
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: portfolio
+      POSTGRES_DB: portfolio
+    ports:
+      - "5433:5432" # non-default host port so it won't collide with a Postgres you already run
+    volumes:
+      - portfolio-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend/portfolio-api
+      dockerfile: Dockerfile
+    ports:
+      - "7000:8080" # matches the port the frontend's .env.example already expects locally
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      # Same postgres:// shape Neon uses, just pointed at the compose network's postgres
+      # service with TLS turned off (this container doesn't have certificates configured).
+      DATABASE_URL: postgres://portfolio:portfolio@postgres:5432/portfolio?sslmode=disable
+      CORS_ALLOWED_ORIGINS: http://localhost:3000
+      # Left blank on purpose: the app logs a warning and skips email/captcha gracefully
+      # when these are unset (see ResendEmailService/TurnstileServiceImpl), which is exactly
+      # what local development without real provider accounts should do.
+      RESEND_API_KEY:
+      TURNSTILE_SECRET_KEY:
+      TURNSTILE_SITE_KEY:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # No healthcheck block here on purpose - the Dockerfile's own HEALTHCHECK applies to
+    # any container started from this image (compose, `docker run`, Render), so it stays
+    # the single source of truth instead of two copies that could drift apart.
+
+volumes:
+  portfolio-postgres-data:

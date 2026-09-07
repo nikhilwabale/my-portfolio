@@ -2,28 +2,28 @@ services:
   - type: web
     name: my-portfolio-api
     runtime: docker
-    rootDir: backend/PortfolioAPI
+    rootDir: backend/portfolio-api
     dockerfilePath: ./Dockerfile
     plan: free
-    autoDeploy: true
+    # Render's own Docker build runs `mvn package -DskipTests` (tests are skipped there for
+    # build speed, not correctness), so autoDeploy would ship on every push regardless of
+    # whether the test suite actually passes. Deploys are triggered by the GitHub Actions
+    # workflow instead (.github/workflows/ci-cd.yml), only after all 51 tests pass on main -
+    # see DEPLOYMENT.md for the one-time Deploy Hook setup this requires in the Render
+    # dashboard.
+    autoDeploy: false
     envVars:
-      - key: ASPNETCORE_ENVIRONMENT
-        value: Production
-      - key: ASPNETCORE_URLS
-        value: http://0.0.0.0:8080
-      - key: Cors__AllowedOrigins__0
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: CORS_ALLOWED_ORIGINS
         value: https://my-portfolio-lake-one.vercel.app
-      - key: Security__RequireTurnstileInProduction
-        value: "true"
-      - key: Security__EnableTurnstileInDevelopment
-        value: "false"
-      - key: ConnectionStrings__DefaultConnection
+      - key: DATABASE_URL
         sync: false
-      - key: Turnstile__SecretKey
+      - key: TURNSTILE_SECRET_KEY
         sync: false
-      - key: Resend__ApiKey
+      - key: RESEND_API_KEY
         sync: false
-      - key: Resend__FromEmail
+      - key: RESEND_FROM_EMAIL
         value: onboarding@resend.dev
-      - key: Resend__ToEmail
+      - key: RESEND_TO_EMAIL
         value: wablenikhil2000@gmail.com

@@ -117,7 +117,7 @@ export function Contact() {
             {turnstileEnabled && (
               <TurnstileWidget siteKey={siteKey} resetKey={turnstileResetKey} onTokenChange={handleToken} onError={() => setToast({ type: 'error', message: 'Security verification failed. Please try again.' })} />
             )}
-            <button type="submit" disabled={isSubmitting || Boolean(siteKey && !turnstileToken)} className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-6 py-4 font-black text-white transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-70">
+            <button type="submit" disabled={isSubmitting || Boolean(siteKey && !turnstileToken)} className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-linear-to-r from-cyan-400 to-blue-600 px-6 py-4 font-black text-white transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-70">
               {isSubmitting ? <Loader2 className="animate-spin"/> : <Send size={18}/>} {isSubmitting ? 'Sending message...' : siteKey && !turnstileToken ? 'Complete Verification' : 'Submit Inquiry'}
             </button>
             <AnimatePresence>

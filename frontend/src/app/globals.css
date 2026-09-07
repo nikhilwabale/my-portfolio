@@ -22,6 +22,11 @@
 }
 html {
   scroll-behavior: smooth;
+  /* The site header is a fixed 80px bar at every breakpoint (Header.tsx's h-20). Section padding
+     alone doesn't always clear that (it drops to 72px between 641-900px wide), so anchor jumps
+     and scrollIntoView() calls were landing with the header covering the first line of the
+     target section - most visible on landscape phones, whose width commonly falls in that range. */
+  scroll-padding-top: 96px;
 }
 body {
   margin: 0;
@@ -126,6 +131,7 @@ textarea {
   border: 1px solid var(--border);
   border-radius: 24px;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
 }
 .grid-bg {
@@ -208,7 +214,6 @@ textarea {
   letter-spacing: -0.072em;
   font-weight: 950;
   color: #f8fafc;
-  text-wrap: balance;
   text-shadow: 0 20px 90px rgba(32, 216, 255, 0.08);
 }
 .hero-title::after {
@@ -219,17 +224,20 @@ textarea {
   background-clip: text;
   color: transparent;
 }
+/* Height is reserved in em units so it always scales with the responsive font-size below and
+   reliably covers 2 lines of wrapped text at every breakpoint - see the removed min-height/
+   font-size overrides throughout this file that used to fight over this instead. */
 .hero-role {
   margin-top: 30px;
   color: #ecfeff;
-  font-size: clamp(26px, 3.1vw, 42px);
-  line-height: 1.18;
+  font-size: clamp(21px, 3.1vw, 42px);
+  line-height: 1.3;
   font-weight: 900;
-  min-height: 58px;
+  min-height: calc(1.3em * 2);
   display: flex;
-  align-items: center;
-  white-space: nowrap;
-  overflow: hidden;
+  align-items: flex-start;
+  white-space: normal;
+  overflow: visible;
 }
 .comment-mark {
   color: rgba(148, 163, 184, 0.55);
@@ -240,7 +248,14 @@ textarea {
   color: #67e8f9;
   text-shadow: 0 0 28px rgba(32, 216, 255, 0.16);
   display: inline-block;
-  min-width: min(580px, 100%);
+}
+/* Below ~336px, the font-size floor above is still large enough that the longest rotating
+   phrase needs a 3rd wrapped line - measured empirically, not guessed - so reserve one more
+   line there specifically instead of over-reserving space at every other width. */
+@media (max-width: 336px) {
+  .hero-role {
+    min-height: calc(1.3em * 3);
+  }
 }
 .typing-cursor {
   margin-left: 4px;
@@ -372,13 +387,19 @@ textarea {
   left: 28px;
   bottom: 28px;
   width: calc(50% - 36px);
-  min-height: 126px;
 }
 .visual-card-right {
   right: 28px;
   bottom: 28px;
   width: calc(50% - 36px);
-  min-height: 126px;
+}
+/* min-height only applies once the card has room to sit beside the copy;
+   below this width the mobile rules take over layout entirely. */
+@media (min-width: 641px) {
+  .visual-card-left,
+  .visual-card-right {
+    min-height: 126px;
+  }
 }
 .hero-orbit-note {
   position: absolute;
@@ -483,14 +504,6 @@ body.has-pro-cursor button {
     font-size: clamp(56px, 17vw, 78px);
     letter-spacing: -0.06em;
   }
-  .hero-role {
-    font-size: 22px;
-    min-height: 58px;
-    white-space: normal;
-  }
-  .role-type {
-    min-width: auto;
-  }
   .hero-description {
     font-size: 17px;
   }
@@ -518,7 +531,6 @@ body.has-pro-cursor button {
     left: 14px;
     right: 14px;
     width: auto;
-    min-height: auto;
   }
   .visual-card-left {
     bottom: 142px;
@@ -551,6 +563,7 @@ body.has-pro-cursor button {
     linear-gradient(rgba(32, 216, 255, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(32, 216, 255, 0.08) 1px, transparent 1px);
   background-size: 58px 58px;
+  -webkit-mask-image: radial-gradient(circle, black, transparent 72%);
   mask-image: radial-gradient(circle, black, transparent 72%);
 }
 .preloader-mark {
@@ -628,12 +641,9 @@ body.has-pro-cursor button {
   color: #f8fafc;
 }
 .hero-role-fixed {
-  min-height: 66px;
   width: min(720px, 100%);
-  align-items: flex-start;
 }
 .role-type {
-  min-width: 620px;
   max-width: 100%;
 }
 .hero-micro-grid {
@@ -677,6 +687,7 @@ body.has-pro-cursor button {
   border: 1px solid rgba(148, 163, 184, 0.18);
   background: rgba(15, 23, 42, 0.58);
   color: #94a3b8;
+  -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
   transition: 0.22s ease;
 }
@@ -744,6 +755,7 @@ body.has-pro-cursor button {
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.2);
   background: rgba(8, 13, 25, 0.72);
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   font-weight: 900;
   color: #dbeafe;
@@ -960,6 +972,7 @@ body.has-pro-cursor button {
   inset: 0;
   z-index: 80;
   background: rgba(3, 7, 18, 0.72);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   display: grid;
   place-items: start center;
@@ -1025,11 +1038,6 @@ body.has-pro-cursor button {
 @media (max-width: 768px) {
   .hero-title-pro {
     font-size: clamp(62px, 18vw, 92px);
-  }
-  .hero-role-fixed {
-    white-space: normal;
-    min-height: 96px;
-    font-size: 26px;
   }
   .hero-micro-grid {
     grid-template-columns: 1fr;
@@ -1211,12 +1219,6 @@ body.has-pro-cursor button {
   background-clip: text;
   color: transparent;
 }
-.hero-role-fixed {
-  min-height: 68px;
-}
-.role-type {
-  min-width: 650px;
-}
 .hero-visual-pro {
   position: relative;
   min-height: 640px;
@@ -1321,11 +1323,15 @@ body.has-pro-cursor button {
   gap: 12px;
 }
 .hero-proof-row div {
-  min-height: 110px;
   border: 1px solid rgba(148, 163, 184, 0.15);
   border-radius: 22px;
   background: rgba(15, 23, 42, 0.72);
   padding: 18px;
+}
+@media (min-width: 721px) {
+  .hero-proof-row div {
+    min-height: 110px;
+  }
 }
 .hero-proof-row svg {
   color: var(--cyan);
@@ -1354,6 +1360,12 @@ body.has-pro-cursor button {
   transform-origin: 0%;
   background: linear-gradient(90deg, var(--cyan), var(--blue), var(--purple));
   box-shadow: 0 0 22px rgba(32, 216, 255, 0.45);
+}
+/* Scrolling is locked (body overflow:hidden) while the mobile menu is open, and the menu's
+   z-index now sits below the header on purpose (see .mobile-nav-fullscreen) - without this the
+   scroll-to-top button would float on top of the open menu instead of staying hidden behind it. */
+body:has(.mobile-nav-fullscreen) .scroll-top-button {
+  display: none;
 }
 .scroll-top-button {
   position: fixed;
@@ -1456,7 +1468,6 @@ body.has-pro-cursor button {
     bottom: 16px;
   }
   .hero-proof-row div {
-    min-height: auto;
     padding: 14px 16px;
   }
   .tech-ticker {
@@ -1527,7 +1538,13 @@ body.has-pro-cursor button {
 .project-card-pro {
   display: flex;
   flex-direction: column;
-  min-height: 620px;
+}
+/* Equal-height cards only once there's a multi-column grid to align (see the
+   three responsive resets below covering every width under this). */
+@media (min-width: 1200px) {
+  .project-card-pro {
+    min-height: 620px;
+  }
 }
 .project-case-grid {
   display: grid;
@@ -1714,14 +1731,11 @@ body.has-pro-cursor button {
   .hero-impact-list p {
     font-size: 13px;
   }
-  .project-card-pro {
-    min-height: auto;
-  }
 }
 
 /* Final production fixes: prevent hero text clipping and support the JSON profile card. */
 .hero-section {
-  overflow-x: clip;
+  overflow-x: hidden;
   overflow-y: visible;
 }
 .hero-copy,
@@ -1796,15 +1810,10 @@ select {
   color-scheme: light;
 }
 
-/* Final professional UI corrections requested. */
-.hero-section {
-  overflow-x: clip;
-}
 .hero-grid-v11 {
   align-items: center;
 }
 .hero-role-fixed {
-  min-height: 84px;
   display: flex;
   align-items: flex-start;
   overflow: visible;
@@ -1936,10 +1945,6 @@ select option:disabled {
   }
 }
 @media (max-width: 768px) {
-  .hero-role-fixed {
-    min-height: 112px;
-    font-size: 25px;
-  }
   .hero-visual-profile {
     min-height: 560px;
   }
@@ -1954,12 +1959,10 @@ select option:disabled {
 
 /* Final UX/content polish requested by Nikhil */
 .hero-role-fixed {
-  min-height: 96px;
   align-items: flex-start;
 }
 .role-type {
   max-width: min(100%, 760px);
-  line-height: 1.28;
 }
 .hero-description {
   max-width: 780px;
@@ -2012,9 +2015,6 @@ select option[value=''] {
   .freelance-grid {
     grid-template-columns: 1fr;
   }
-  .hero-role-fixed {
-    min-height: 120px;
-  }
 }
 
 /* Final responsive fixes for portfolio review */
@@ -2031,7 +2031,6 @@ select option[value=''] {
   z-index: 49;
   height: calc(100dvh - 80px) !important;
   overflow-y: auto;
-  overscroll-behavior: contain;
   padding-top: 20px;
   background: rgba(6, 16, 28, 0.98) !important;
   -webkit-backdrop-filter: blur(22px);
@@ -2074,7 +2073,6 @@ form.glass-card {
     padding-block: 72px;
   }
   .project-card-pro {
-    min-height: auto;
     padding: 18px !important;
   }
   .project-card-pro h3 {
@@ -2152,9 +2150,6 @@ form.glass-card {
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
-  .project-card-pro {
-    min-height: auto;
-  }
   .project-preview-image {
     height: 240px !important;
   }
@@ -2169,7 +2164,6 @@ form.glass-card {
     width: min(100% - 32px, 1180px) !important;
   }
   .hero-section {
-    min-height: auto;
     padding-top: 96px;
     overflow-x: hidden;
   }
@@ -2198,8 +2192,6 @@ form.glass-card {
   }
   .hero-role,
   .hero-role-fixed {
-    min-height: 92px !important;
-    font-size: clamp(24px, 7.4vw, 32px) !important;
     white-space: normal !important;
     overflow: visible !important;
     align-items: flex-start !important;
@@ -2259,7 +2251,6 @@ form.glass-card {
     font-size: clamp(72px, 10vw, 112px) !important;
   }
   .hero-role-fixed {
-    min-height: 82px !important;
     white-space: normal !important;
     overflow: visible !important;
   }
@@ -2606,7 +2597,7 @@ form.glass-card {
   body {
     width: 100% !important;
     max-width: 100% !important;
-    overflow-x: clip !important;
+    overflow-x: hidden !important;
   }
 
   body {
@@ -2696,11 +2687,8 @@ form.glass-card {
   .hero-role-fixed {
     width: 100% !important;
     max-width: 100% !important;
-    min-height: 78px !important;
     justify-content: flex-start !important;
     align-items: flex-start !important;
-    font-size: clamp(24px, 7vw, 30px) !important;
-    line-height: 1.22 !important;
     margin-left: 0 !important;
     text-align: left !important;
   }
@@ -2836,7 +2824,10 @@ form.glass-card {
   .mobile-nav-fullscreen {
     position: fixed !important;
     inset: 0 !important;
-    z-index: 80 !important;
+    /* Must stay below the header's z-50 (site-header, Header.tsx) - the header carries the
+       menu's own close (X) button, and a higher z-index here was covering it completely,
+       leaving the open menu with no visible way to close it on phones under 641px wide. */
+    z-index: 45 !important;
     height: 100dvh !important;
     width: 100vw !important;
     display: flex !important;
@@ -3016,7 +3007,7 @@ form.glass-card {
   #contact {
     width: 100% !important;
     max-width: 100vw !important;
-    overflow-x: clip !important;
+    overflow-x: hidden !important;
   }
 
   #contact > .container {

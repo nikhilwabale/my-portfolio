@@ -18,11 +18,11 @@ import { useEffect, useMemo, useState } from 'react';
 function AnimatedRole() {
   const roles = useMemo(
     () => [
-      'Building Enterprise Solutions',
-      'Creating AI-Powered Applications',
-      'Crafting Modern Web Experiences',
-      'Transforming Ideas into Products',
-      'Building Scalable Full-Stack Applications'
+      'Building Full-Stack Web Applications',
+      'Automating Cloud Infrastructure',
+      'Crafting Modern Frontend Experiences',
+      'Engineering AI-Powered Solutions',
+      'Delivering Production-Ready Software'
     ],
     []
   );
@@ -73,7 +73,7 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="hero-section relative flex min-h-screen items-center overflow-hidden pt-24"
+      className="hero-section relative flex sm:min-h-screen items-center overflow-hidden pt-24"
     >
       <div className="absolute inset-0 -z-10 opacity-85 grid-bg" />
       <div className="hero-social-rail" aria-label="Social links">
@@ -110,7 +110,7 @@ export function Hero() {
             transition={{ duration: 0.55, delay: 0.22 }}
             className="hero-kicker"
           >
-            // Portfolio of
+            {'// Portfolio of'}
           </motion.p>
 
           <motion.h1
@@ -137,9 +137,9 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.42, duration: 0.55 }}
-            className="hero-role hero-role-fixed min-h-[4rem] md:min-h-[5rem] lg:min-h-[6rem]"
+            className="hero-role hero-role-fixed"
           >
-            <span className="comment-mark">//</span>
+            <span className="comment-mark">{'//'}</span>
             <AnimatedRole />
           </motion.div>
 

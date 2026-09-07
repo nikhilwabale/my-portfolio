@@ -7,7 +7,7 @@ type ButtonProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
 
 export function Button({ children, variant = 'primary', className = '', ...props }: ButtonProps) {
   const variants = {
-    primary: 'bg-gradient-to-r from-cyan-400 to-blue-600 text-white shadow-[0_0_32px_rgba(32,216,255,.24)] hover:shadow-[0_0_46px_rgba(32,216,255,.38)]',
+    primary: 'bg-linear-to-r from-cyan-400 to-blue-600 text-white shadow-[0_0_32px_rgba(32,216,255,.24)] hover:shadow-[0_0_46px_rgba(32,216,255,.38)]',
     secondary: 'bg-white/5 border border-white/16 text-white hover:border-cyan-300/60 hover:bg-white/10',
     ghost: 'border border-cyan-400/40 text-cyan-200 hover:bg-cyan-400/10'
   };

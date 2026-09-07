@@ -39,14 +39,14 @@ export function CustomCursor() {
     <>
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[100] hidden lg:block pro-cursor-ring"
+        className="pointer-events-none fixed left-0 top-0 z-100 hidden lg:block pro-cursor-ring"
         style={{ x: ringX, y: ringY, translateX: '-50%', translateY: '-50%' }}
         animate={{ opacity: visible ? 1 : 0, scale: hovering ? 1.65 : 1 }}
         transition={{ duration: 0.18 }}
       />
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[101] hidden lg:block pro-cursor-core"
+        className="pointer-events-none fixed left-0 top-0 z-101 hidden lg:block pro-cursor-core"
         style={{ x: dotX, y: dotY, translateX: '-50%', translateY: '-50%' }}
         animate={{ opacity: visible ? 1 : 0, scale: hovering ? 0.7 : 1 }}
         transition={{ duration: 0.15 }}
