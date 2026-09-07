@@ -88,7 +88,7 @@ export const projects = [
     ],
     result:
       'Created a scalable full-stack foundation for enterprise asset tracking, workflow visibility and future cloud deployment.',
-    stack: ['React.js', 'Java','Spring Boot', 'Spring Data JPA', 'Hibernate', 'SQL Server','REST API', 'JWT', 'RBAC','Azure']
+    stack: ['React.js', 'Java','Spring Boot', 'Spring Data JPA', 'Hibernate', 'SQL Server','REST API', 'JWT', 'RBAC','AWS']
   },
   {
     title: 'AMS App',
