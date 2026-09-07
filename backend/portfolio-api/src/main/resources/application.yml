@@ -21,6 +21,17 @@ server:
   # Trust X-Forwarded-For / X-Forwarded-Proto from Render's proxy so client IPs used for
   # rate limiting and audit logging are the real visitor IP, not Render's internal proxy IP.
   forward-headers-strategy: framework
+  tomcat:
+    # Tomcat's defaults (200 threads, 8192 connections) assume headroom this app doesn't
+    # have on Render's free-tier 512MB container - each thread is a ~512KB stack (see the
+    # Dockerfile's -Xss512k) and each accepted connection holds buffer memory whether or
+    # not a thread is free to serve it yet. This API is also rate-limited to 3 req/hour/IP,
+    # so real concurrency needs are naturally small.
+    threads:
+      max: 10
+      min-spare: 2
+    accept-count: 20
+    max-connections: 100
 
 # Structured config - also reachable via flat env vars through Spring's relaxed binding,
 # e.g. RESEND_API_KEY -> resend.api-key, TURNSTILE_SECRET_KEY -> turnstile.secret-key.

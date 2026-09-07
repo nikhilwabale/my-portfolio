@@ -26,6 +26,11 @@ import java.nio.charset.StandardCharsets;
 @ConditionalOnProperty(name = "DATABASE_URL")
 public class DataSourceConfig {
 
+    /** Pure result of parsing a DATABASE_URL - kept separate from bean construction so it's
+     *  testable without HikariDataSource's eager connection attempt on construction. */
+    record ConnectionDetails(String jdbcUrl, String username, String password) {
+    }
+
     @Bean
     public DataSource dataSource(
             @Value("${DATABASE_URL:}") String databaseUrl,
@@ -37,8 +42,24 @@ public class DataSourceConfig {
                     "DATABASE_URL is missing. Set your Neon PostgreSQL connection string as the DATABASE_URL environment variable.");
         }
 
-        HikariConfig config = new HikariConfig();
+        var details = parseConnectionDetails(databaseUrl, fallbackUsername, fallbackPassword);
 
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(details.jdbcUrl());
+        config.setUsername(details.username());
+        config.setPassword(details.password());
+        config.setDriverClassName("org.postgresql.Driver");
+        // Matches server.tomcat.threads.max=10 (application.yml) - no point pooling more
+        // DB connections than there are request threads to use them, and each connection
+        // is memory this app can't spare on Render's free-tier 512MB container.
+        config.setMaximumPoolSize(3);
+        config.setMinimumIdle(1);
+        config.setPoolName("portfolio-api-pool");
+
+        return new HikariDataSource(config);
+    }
+
+    static ConnectionDetails parseConnectionDetails(String databaseUrl, String fallbackUsername, String fallbackPassword) {
         if (databaseUrl.startsWith("postgres://") || databaseUrl.startsWith("postgresql://")) {
             var uri = URI.create(databaseUrl);
             var userInfo = uri.getUserInfo();
@@ -52,27 +73,27 @@ public class DataSourceConfig {
 
             var database = uri.getPath() == null ? "" : uri.getPath().replaceFirst("^/", "");
             var port = uri.getPort() > 0 ? uri.getPort() : 5432;
-            var jdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + port + "/" + database + "?sslmode=require";
+            // Neon's own connection strings already carry their sslmode (typically
+            // ?sslmode=require); pass that through as-is instead of silently overwriting
+            // it, and only default to "require" when the source URI left it unspecified.
+            // This also lets a local docker-compose Postgres (no TLS configured) connect
+            // via the same postgres:// format with ?sslmode=disable, rather than needing a
+            // different DATABASE_URL shape just for local development.
+            var query = uri.getQuery();
+            var queryString = (query == null || query.isBlank()) ? "sslmode=require" : query;
+            var jdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + port + "/" + database + "?" + queryString;
 
-            config.setJdbcUrl(jdbcUrl);
-            config.setUsername(username);
-            config.setPassword(password);
-        } else {
-            // Already a JDBC URL (e.g. "jdbc:postgresql://host:5432/db?sslmode=require").
-            config.setJdbcUrl(databaseUrl);
-            config.setUsername(fallbackUsername.isBlank() ? null : fallbackUsername);
-            config.setPassword(fallbackPassword.isBlank() ? null : fallbackPassword);
+            return new ConnectionDetails(jdbcUrl, username, password);
         }
 
-        config.setDriverClassName("org.postgresql.Driver");
-        config.setMaximumPoolSize(5);
-        config.setMinimumIdle(1);
-        config.setPoolName("portfolio-api-pool");
-
-        return new HikariDataSource(config);
+        // Already a JDBC URL (e.g. "jdbc:postgresql://host:5432/db?sslmode=require").
+        return new ConnectionDetails(
+                databaseUrl,
+                fallbackUsername.isBlank() ? null : fallbackUsername,
+                fallbackPassword.isBlank() ? null : fallbackPassword);
     }
 
-    private String decode(String value) {
+    private static String decode(String value) {
         return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 }

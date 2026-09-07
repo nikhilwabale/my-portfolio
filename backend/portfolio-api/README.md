@@ -89,7 +89,7 @@ export TURNSTILE_SECRET_KEY="your-secret-key"
 ./mvnw test
 ```
 
-The suite (41 tests) needs no external services or database - `ContactControllerIntegrationTest`
+The suite (51 tests) needs no external services or database - `ContactControllerIntegrationTest`
 runs against a real embedded Tomcat and an in-memory H2 database (Postgres-compatibility mode),
 with `EmailService`/`TurnstileService` swapped for Mockito mocks so no real network calls reach
 Resend or Cloudflare.
@@ -110,5 +110,18 @@ can't slip past the API by whitespace-padding it.
 
 ## Docker
 
-Not part of this backend yet - a multi-stage Dockerfile and `docker-compose.yml` are a later,
-dedicated DevOps stage of this migration, not covered by this README.
+```bash
+# From the repo root - builds the backend and starts it against a local Postgres:
+docker compose up --build
+
+# Backend: http://localhost:7000 (health: /health, /health/db)
+# Stop and remove containers (add -v to also drop the local Postgres volume):
+docker compose down
+```
+
+The `Dockerfile` here is a multi-stage build (JDK to compile, a slim `eclipse-temurin` JRE-alpine
+image to run) with JVM flags tuned for Render's free-tier 512MB container limit - capped heap
+(`-XX:MaxRAMPercentage=50`), Serial GC over G1, C1-only JIT, and small Tomcat/HikariCP pools to
+match (`server.tomcat.threads.max=10`, `DataSourceConfig`'s pool size of 3). See the Dockerfile's
+own comments for the reasoning behind each flag, and the repo root's `DEPLOYMENT.md` for how this
+image actually gets to Render in production.
