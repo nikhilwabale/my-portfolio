@@ -5,7 +5,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.nikhilwabale.portfolioapi.dto.ContactRequest;
 import com.nikhilwabale.portfolioapi.repository.ContactMessageRepository;
-import com.nikhilwabale.portfolioapi.service.EmailService;
+import com.nikhilwabale.portfolioapi.service.ContactNotificationService;
 import com.nikhilwabale.portfolioapi.service.TurnstileService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,11 +22,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 /**
- * Verifies visitor email addresses never reach the application log output, even on the
- * failure paths that used to include them (ContactController previously logged
- * message.getEmail() on DB/unexpected-error catches). This asserts against the actual
- * rendered log line content via a real Logback appender, not just that the source code
- * looks right.
+ * Verifies visitor email addresses never reach the application log output on ContactController's
+ * own failure paths (database save, unexpected errors). Asserts against the actual rendered log
+ * line content via a real Logback appender, not just that the source code looks right. The
+ * email-send failure path now lives in ContactNotificationService (see its own logging test),
+ * since email is sent asynchronously after this controller has already responded.
  */
 @ExtendWith(MockitoExtension.class)
 class ContactControllerLoggingTest {
@@ -38,14 +38,14 @@ class ContactControllerLoggingTest {
     @Mock
     private TurnstileService turnstileService;
     @Mock
-    private EmailService emailService;
+    private ContactNotificationService contactNotificationService;
 
     private ContactController controller;
     private ListAppender<ILoggingEvent> logAppender;
 
     @BeforeEach
     void setUp() {
-        controller = new ContactController(contactMessageRepository, turnstileService, emailService);
+        controller = new ContactController(contactMessageRepository, turnstileService, contactNotificationService);
 
         logAppender = new ListAppender<>();
         logAppender.start();
@@ -79,18 +79,6 @@ class ContactControllerLoggingTest {
         assertThat(response.getStatusCode().value()).isEqualTo(500);
         assertThat(renderedLogMessages()).noneMatch(msg -> msg.contains(VISITOR_EMAIL));
         assertThat(renderedLogMessages()).anyMatch(msg -> msg.contains("Unexpected error while processing contact message"));
-    }
-
-    @Test
-    void emailFailureLogDoesNotContainTheVisitorEmail() {
-        when(turnstileService.verify(any(), any())).thenReturn(true);
-        when(emailService.sendContactNotification(any()))
-                .thenReturn(EmailService.EmailResult.failure("Email provider unreachable"));
-
-        var response = controller.submit(validRequest(), mockHttpRequest());
-
-        assertThat(response.getStatusCode().value()).isEqualTo(502);
-        assertThat(renderedLogMessages()).noneMatch(msg -> msg.contains(VISITOR_EMAIL));
     }
 
     private java.util.List<String> renderedLogMessages() {
