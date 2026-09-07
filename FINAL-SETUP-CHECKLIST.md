@@ -1,7 +1,7 @@
 # Final Setup Checklist
 
-- [ ] Rotate exposed Neon password, Resend API key and Turnstile secret key.
-- [ ] Confirm no real secrets exist in committed files.
+- [x] Rotate exposed Neon password, Resend API key and Turnstile secret key.
+- [x] Confirm no real secrets exist in committed files.
 - [ ] Add real secrets only in Render and Vercel environment variables.
 - [ ] Backend builds locally.
 - [ ] Frontend builds locally.

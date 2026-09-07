@@ -73,11 +73,14 @@ public class ContactController {
                         "Your message was saved, but email notification failed. Please check Resend API key, sender and verified recipient settings."));
             }
         } catch (DataAccessException ex) {
-            log.error("Database save failed for contact request from {}", message.getEmail(), ex);
+            // Message ID, not email - see StringSanitizer/logging conventions: PII stays out
+            // of logs, the DB row (looked up by ID, through proper access control) is the
+            // correct place to go for the actual contact details behind a failure.
+            log.error("Database save failed for contact message {}", message.getId(), ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                     .body(ContactResponse.fail("Contact service is temporarily unavailable. Please try again later."));
         } catch (Exception ex) {
-            log.error("Unexpected error while processing contact request from {}", message.getEmail(), ex);
+            log.error("Unexpected error while processing contact message {}", message.getId(), ex);
             return ResponseEntity.internalServerError()
                     .body(ContactResponse.fail("Something went wrong. Please try again later."));
         }
