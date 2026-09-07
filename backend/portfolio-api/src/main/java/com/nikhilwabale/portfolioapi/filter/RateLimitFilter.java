@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,6 +21,7 @@ import java.util.concurrent.ConcurrentMap;
  * matching the old ASP.NET Core FixedWindowRateLimiter policy. Backed by an in-memory
  * token bucket per client IP - fine for a single-instance, low-traffic portfolio API.
  */
+@Slf4j
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
 
@@ -32,7 +34,14 @@ public class RateLimitFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        var bucket = buckets.computeIfAbsent(clientIp(request), ip -> newBucket());
+        var resolvedIp = clientIp(request);
+        var bucket = buckets.computeIfAbsent(resolvedIp, ip -> newBucket());
+
+        // Temporary diagnostic - a live production test sent 4 rapid requests and none were
+        // rate-limited. Logging the resolved IP and bucket identity/count to confirm whether
+        // requests are landing in the same bucket at all. Remove once confirmed.
+        log.info("Rate limit check: resolvedIp={}, bucketCount={}, remoteAddr={}, xForwardedFor={}",
+                resolvedIp, buckets.size(), request.getRemoteAddr(), request.getHeader("X-Forwarded-For"));
 
         if (bucket.tryConsume(1)) {
             chain.doFilter(request, response);

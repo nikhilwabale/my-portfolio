@@ -68,19 +68,27 @@ class ContactControllerIntegrationTest {
         var saved = contactMessageRepository.findAll().get(0);
         assertThat(saved.getName()).isEqualTo("Test User");
         assertThat(saved.getEmail()).isEqualTo("test@example.com");
-        assertThat(saved.isEmailNotificationSent()).isTrue();
+
+        // Email is sent asynchronously after the response - see ContactNotificationService -
+        // so its result lands on the row shortly after, not by the time postContact() returns.
+        waitUntil(() -> contactMessageRepository.findAll().get(0).isEmailNotificationSent());
     }
 
     @Test
-    void returns502WhenSavedButEmailFails() {
+    void respondsSuccessfullyEvenWhenEmailSendingFails() {
         when(turnstileService.verify(any(), any())).thenReturn(true);
         when(emailService.sendContactNotification(any()))
                 .thenReturn(EmailService.EmailResult.failure("Email provider unreachable"));
 
         var response = postContact(validPayload(), "203.0.113.102");
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+        // The response no longer waits on the email step - the message is saved and reported
+        // as successful right away, regardless of how the async email send turns out.
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).contains("\"success\":true");
         assertThat(contactMessageRepository.findAll()).hasSize(1);
+
+        waitUntil(() -> contactMessageRepository.findAll().get(0).getEmailFailureReason() != null);
         var saved = contactMessageRepository.findAll().get(0);
         assertThat(saved.isEmailNotificationSent()).isFalse();
         assertThat(saved.getEmailFailureReason()).isEqualTo("Email provider unreachable");
@@ -151,6 +159,23 @@ class ContactControllerIntegrationTest {
         assertThat(fourthResponse.getStatusCode()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS);
         assertThat(fourthResponse.getBody()).contains("Too many requests");
         assertThat(contactMessageRepository.findAll()).hasSize(3);
+    }
+
+    /** Polls a condition backed by the async email-notification step (see ContactNotificationService)
+     *  instead of asserting immediately, since that step completes shortly after the HTTP response,
+     *  not before it. */
+    private void waitUntil(java.util.function.BooleanSupplier condition) {
+        var deadline = System.currentTimeMillis() + 5000;
+        while (System.currentTimeMillis() < deadline) {
+            if (condition.getAsBoolean()) return;
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                throw new AssertionError("Interrupted while waiting for async email notification", ex);
+            }
+        }
+        throw new AssertionError("Condition not met within 5s");
     }
 
     private org.springframework.http.ResponseEntity<String> postContact(Map<String, Object> payload, String forwardedForIp) {

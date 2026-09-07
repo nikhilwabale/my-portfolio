@@ -52,6 +52,16 @@ public class TurnstileServiceImpl implements TurnstileService {
                 ? securityProperties.isRequireTurnstileInProduction()
                 : securityProperties.isEnableTurnstileInDevelopment();
 
+        // Temporary diagnostic - a live production test showed missing/empty/fake tokens all
+        // being accepted, which the code path below should not allow. Logging the actual
+        // decision inputs (never the token/secret values themselves) to find out why, rather
+        // than guessing. Remove once confirmed.
+        var activeProfiles = environment.getActiveProfiles();
+        log.info("Turnstile check: activeProfiles={}, isProduction={}, shouldVerify={}, secretConfigured={}, tokenProvided={}",
+                activeProfiles == null ? "" : String.join(",", activeProfiles), isProduction, shouldVerify,
+                turnstileProperties.getSecretKey() != null && !turnstileProperties.getSecretKey().isBlank(),
+                token != null && !token.isBlank());
+
         if (!shouldVerify) {
             return true;
         }
