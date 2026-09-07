@@ -37,8 +37,13 @@ export function Contact() {
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [turnstileToken, setTurnstileToken] = useState('');
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [turnstileExecuteKey, setTurnstileExecuteKey] = useState(0);
+  // Single source of truth for "is a submit attempt in flight" - covers both the Turnstile
+  // verification step and the actual API call, so the button/toast never disagree about
+  // whether something is happening.
+  const [busy, setBusy] = useState(false);
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<FormData>({
+  const { register, handleSubmit, getValues, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues
   });
@@ -49,32 +54,54 @@ export function Contact() {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
-  const handleToken = useCallback((token: string) => setTurnstileToken(token), []);
-
-  async function onSubmit(data: FormData) {
-    setToast(null);
-
-    if (siteKey && !turnstileToken) {
-      setToast({ type: 'error', message: 'Please complete the security verification before submitting.' });
-      return;
-    }
-
+  const performSubmit = useCallback(async (data: FormData, token: string) => {
     try {
       await sendContactMessage({
         ...data,
-        turnstileToken,
+        turnstileToken: token,
         website: ''
       });
-
       reset(defaultValues);
-      setTurnstileToken('');
-      setTurnstileResetKey((value) => value + 1);
       setToast({ type: 'success', message: 'Message submitted successfully. I will get back to you soon.' });
     } catch (error) {
+      setToast({ type: 'error', message: error instanceof Error ? error.message : 'Unable to submit your message right now. Please try again later.' });
+    } finally {
       setTurnstileToken('');
       setTurnstileResetKey((value) => value + 1);
-      setToast({ type: 'error', message: error instanceof Error ? error.message : 'Unable to submit your message right now. Please try again later.' });
+      setBusy(false);
     }
+  }, [reset]);
+
+  // Turnstile only ever produces a token in response to the explicit execute() trigger fired
+  // from onSubmit below (execution: 'execute' mode - see TurnstileWidget), so any token that
+  // arrives here is always the continuation of a submit that's already in flight (busy=true).
+  // getValues() reads whatever's currently in the form; that's still what was validated at
+  // submit time in practice since the button (and effectively the fields) are disabled for the
+  // brief verification window.
+  const handleToken = useCallback((token: string) => {
+    setTurnstileToken(token);
+    if (token) {
+      void performSubmit(getValues(), token);
+    }
+  }, [performSubmit, getValues]);
+
+  function onSubmit(data: FormData) {
+    setToast(null);
+    setBusy(true);
+
+    if (siteKey) {
+      // Don't verify until the user actually submits - performSubmit continues once a token
+      // arrives, via handleToken above.
+      setTurnstileExecuteKey((value) => value + 1);
+      return;
+    }
+
+    void performSubmit(data, '');
+  }
+
+  function handleTurnstileError() {
+    setBusy(false);
+    setToast({ type: 'error', message: 'Security verification failed. Please try again.' });
   }
 
   return (
@@ -115,10 +142,10 @@ export function Contact() {
             </div>
             <Field label="Message" error={errors.message?.message}><textarea {...register('message')} rows={7} placeholder="Briefly describe the role, project requirement, timeline or collaboration idea..." /></Field>
             {turnstileEnabled && (
-              <TurnstileWidget siteKey={siteKey} resetKey={turnstileResetKey} onTokenChange={handleToken} onError={() => setToast({ type: 'error', message: 'Security verification failed. Please try again.' })} />
+              <TurnstileWidget siteKey={siteKey} resetKey={turnstileResetKey} executeKey={turnstileExecuteKey} onTokenChange={handleToken} onError={handleTurnstileError} />
             )}
-            <button type="submit" disabled={isSubmitting || Boolean(siteKey && !turnstileToken)} className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-linear-to-r from-cyan-400 to-blue-600 px-6 py-4 font-black text-white transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-70">
-              {isSubmitting ? <Loader2 className="animate-spin"/> : <Send size={18}/>} {isSubmitting ? 'Sending message...' : siteKey && !turnstileToken ? 'Complete Verification' : 'Submit Inquiry'}
+            <button type="submit" disabled={busy} className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-linear-to-r from-cyan-400 to-blue-600 px-6 py-4 font-black text-white transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-70">
+              {busy ? <Loader2 className="animate-spin"/> : <Send size={18}/>} {busy ? 'Sending message...' : 'Submit Inquiry'}
             </button>
             <AnimatePresence>
               {toast && (
