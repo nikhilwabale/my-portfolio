@@ -6,7 +6,6 @@ declare global {
   interface Window {
     turnstile?: {
       render: (container: HTMLElement, options: Record<string, unknown>) => string;
-      execute: (container: HTMLElement | string, options?: Record<string, unknown>) => void;
       reset: (widgetId?: string) => void;
       remove: (widgetId: string) => void;
     };
@@ -16,9 +15,6 @@ declare global {
 type TurnstileWidgetProps = {
   siteKey?: string;
   resetKey?: number;
-  /** Bump this to trigger verification on demand (execution: 'execute' mode) - the widget
-   *  renders but does nothing until this fires, so nothing verifies just from mounting. */
-  executeKey?: number;
   onTokenChange: (token: string) => void;
   onError?: () => void;
 };
@@ -49,18 +45,13 @@ function loadTurnstileScript(): Promise<void> {
   });
 }
 
-export function TurnstileWidget({ siteKey, resetKey = 0, executeKey = 0, onTokenChange, onError }: TurnstileWidgetProps) {
+export function TurnstileWidget({ siteKey, resetKey = 0, onTokenChange, onError }: TurnstileWidgetProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const widgetIdRef = useRef<string | null>(null);
   const verifiedRef = useRef(false);
   const tokenCallbackRef = useRef(onTokenChange);
   const errorCallbackRef = useRef(onError);
-  // A submit click can arrive before the widget has finished rendering (script still
-  // loading) - remember it and execute as soon as the widget becomes ready instead of
-  // silently dropping it.
-  const pendingExecuteRef = useRef(false);
-  const lastExecutedKeyRef = useRef(0);
-  const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'verifying' | 'verified' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'verified' | 'error'>('idle');
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
@@ -85,7 +76,6 @@ export function TurnstileWidget({ siteKey, resetKey = 0, executeKey = 0, onToken
       if (!siteKey) return;
 
       verifiedRef.current = false;
-      pendingExecuteRef.current = false;
       setStatus('loading');
       tokenCallbackRef.current('');
       cleanupWidget();
@@ -101,10 +91,6 @@ export function TurnstileWidget({ siteKey, resetKey = 0, executeKey = 0, onToken
           theme: 'dark',
           size: 'flexible',
           appearance: 'always',
-          // Widget renders immediately but does not run the actual check until
-          // window.turnstile.execute() is called explicitly - see the executeKey effect
-          // below, triggered only by clicking Submit, not by mounting/becoming visible.
-          execution: 'execute',
           retry: 'auto',
           'retry-interval': 1000,
           callback: (token: string) => {
@@ -133,13 +119,6 @@ export function TurnstileWidget({ siteKey, resetKey = 0, executeKey = 0, onToken
         });
 
         setStatus('ready');
-
-        // A submit click that arrived while the widget was still loading is honored now.
-        if (pendingExecuteRef.current) {
-          pendingExecuteRef.current = false;
-          setStatus('verifying');
-          window.turnstile.execute(widgetIdRef.current);
-        }
       } catch {
         if (cancelled) return;
         setStatus('error');
@@ -168,29 +147,10 @@ export function TurnstileWidget({ siteKey, resetKey = 0, executeKey = 0, onToken
         queueMicrotask(() => setReloadKey((value) => value + 1));
       }
       verifiedRef.current = false;
-      pendingExecuteRef.current = false;
       tokenCallbackRef.current('');
       setStatus('ready');
     }
   }, [resetKey]);
-
-  // Runs the actual check on demand - executeKey is bumped exactly once per submit click,
-  // never on mount (it starts at 0 and this effect skips key 0), so nothing verifies just
-  // from the widget rendering or the Contact section scrolling into view.
-  useEffect(() => {
-    if (executeKey <= 0 || executeKey === lastExecutedKeyRef.current) return;
-    lastExecutedKeyRef.current = executeKey;
-
-    if (!window.turnstile) return;
-
-    if (widgetIdRef.current && (status === 'ready' || status === 'error')) {
-      setStatus('verifying');
-      window.turnstile.execute(widgetIdRef.current);
-    } else if (!widgetIdRef.current) {
-      // Widget is still loading - honored by renderWidget() above once it's ready.
-      pendingExecuteRef.current = true;
-    }
-  }, [executeKey, status]);
 
   if (!siteKey) {
     return (
@@ -209,10 +169,7 @@ export function TurnstileWidget({ siteKey, resetKey = 0, executeKey = 0, onToken
         <p className="text-xs font-semibold text-slate-400">Loading security verification...</p>
       )}
       {status === 'ready' && (
-        <p className="text-xs font-semibold text-slate-400">Verification runs automatically when you submit.</p>
-      )}
-      {status === 'verifying' && (
-        <p className="text-xs font-semibold text-slate-400">Verifying...</p>
+        <p className="text-xs font-semibold text-slate-400">Complete the verification before sending your message.</p>
       )}
       {status === 'error' && (
         <div className="rounded-xl border border-amber-400/25 bg-amber-400/10 p-3 text-sm text-amber-100">
