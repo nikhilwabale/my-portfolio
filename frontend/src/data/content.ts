@@ -62,7 +62,6 @@ export const experience = [
       'SQL Server',
       'Flutter',
       'AWS',
-      'Azure',
       'CI/CD',
       'Generative AI'
     ]
