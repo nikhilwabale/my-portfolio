@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Mail, MapPin, Phone, Send, ShieldCheck, X } from 'lucide-react';
+import { Check, Loader2, Mail, MapPin, Phone, Send, ShieldCheck, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -42,6 +42,11 @@ export function Contact() {
   // verification step and the actual API call, so the button/toast never disagree about
   // whether something is happening.
   const [busy, setBusy] = useState(false);
+  // Keeps the submit button disabled for a short window right after a successful send, so an
+  // eager double-click can't immediately kick off a second verify+submit cycle. Separate from
+  // `busy` since it only follows success, not errors - a failed attempt should stay retryable
+  // right away.
+  const [justSucceeded, setJustSucceeded] = useState(false);
 
   const { register, handleSubmit, getValues, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -54,6 +59,12 @@ export function Contact() {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
+  useEffect(() => {
+    if (!justSucceeded) return;
+    const timer = window.setTimeout(() => setJustSucceeded(false), 3000);
+    return () => window.clearTimeout(timer);
+  }, [justSucceeded]);
+
   const performSubmit = useCallback(async (data: FormData, token: string) => {
     try {
       await sendContactMessage({
@@ -63,6 +74,7 @@ export function Contact() {
       });
       reset(defaultValues);
       setToast({ type: 'success', message: 'Message submitted successfully. I will get back to you soon.' });
+      setJustSucceeded(true);
     } catch (error) {
       setToast({ type: 'error', message: error instanceof Error ? error.message : 'Unable to submit your message right now. Please try again later.' });
     } finally {
@@ -144,8 +156,9 @@ export function Contact() {
             {turnstileEnabled && (
               <TurnstileWidget siteKey={siteKey} resetKey={turnstileResetKey} executeKey={turnstileExecuteKey} onTokenChange={handleToken} onError={handleTurnstileError} />
             )}
-            <button type="submit" disabled={busy} className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-linear-to-r from-cyan-400 to-blue-600 px-6 py-4 font-black text-white transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-70">
-              {busy ? <Loader2 className="animate-spin"/> : <Send size={18}/>} {busy ? 'Sending message...' : 'Submit Inquiry'}
+            <button type="submit" disabled={busy || justSucceeded} className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-linear-to-r from-cyan-400 to-blue-600 px-6 py-4 font-black text-white transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-70">
+              {busy ? <Loader2 className="animate-spin"/> : justSucceeded ? <Check size={18}/> : <Send size={18}/>}
+              {busy ? 'Sending message...' : justSucceeded ? 'Message Sent' : 'Submit Inquiry'}
             </button>
             <AnimatePresence>
               {toast && (
