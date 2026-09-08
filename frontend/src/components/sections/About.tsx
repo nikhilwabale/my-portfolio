@@ -48,18 +48,20 @@ export function About() {
             <div className="glass-card about-copy-card p-7">
               <p className="text-xl leading-9 text-slate-300">
                 I am <strong className="text-white">Nikhil Wabale</strong>, a Full Stack Developer
-                based in Pune, experienced in building scalable web, mobile, and AI-powered
-                applications that solve real-world business challenges.
+                based in Pune, experienced in building and deploying scalable web, mobile, and
+                AI-powered applications that solve real-world business challenges.
               </p>
               <p className="mt-5 text-xl leading-9 text-slate-300">
                 I enjoy transforming ideas into reliable digital solutions by creating intuitive
-                user experiences, developing secure backend systems, building scalable APIs, and
-                integrating Generative AI into modern applications.
+                user experiences, developing secure backend systems, building scalable APIs,
+                integrating Generative AI into modern applications, and automating deployment
+                pipelines across cloud infrastructure to ship them reliably.
               </p>
               <p className="mt-5 text-xl leading-9 text-slate-300">
                 I am passionate about building enterprise-grade software using Java, Spring Boot,
-                React, Next.js, and Generative AI technologies, while continuously learning and
-                delivering high-quality, scalable solutions.
+                React, Next.js, and Generative AI technologies — backed by AWS, Docker, and CI/CD
+                practices — while continuously learning and delivering high-quality, scalable
+                solutions.
               </p>
             </div>
 

@@ -1769,14 +1769,19 @@ body:has(.mobile-nav-fullscreen) .scroll-top-button {
 }
 .hero-code-profile {
   margin: 14px 0 0;
-  white-space: pre-wrap;
+  /* Each line is meant to read as one clean "key": "value" entry. pre-wrap let the browser
+     wrap at whichever internal space happened to run out of room first - including inside a
+     quoted string value - which broke the JSON-block look on narrower panels. Keeping every
+     line intact and letting the block scroll horizontally on the rare width where the longest
+     line doesn't fit preserves that look at every size instead. */
+  white-space: pre;
   overflow-x: auto;
   border-radius: 18px;
   border: 1px solid rgba(103, 232, 249, 0.18);
   background: rgba(2, 6, 23, 0.48);
   padding: 16px;
   color: #dbeafe;
-  font-size: clamp(12px, 1.55vw, 14px);
+  font-size: clamp(10px, 3.2vw, 14px);
   line-height: 1.65;
 }
 .hero-code-profile::selection {
@@ -1797,7 +1802,6 @@ body:has(.mobile-nav-fullscreen) .scroll-top-button {
     top: 300px;
   }
   .hero-code-profile {
-    font-size: 12px;
     padding: 14px;
   }
 }
@@ -1845,10 +1849,6 @@ select {
 }
 .tech-ticker {
   display: none !important;
-}
-.hero-code-profile {
-  font-size: 14px;
-  line-height: 1.65;
 }
 .hero-impact-compact p {
   font-size: 14px;
@@ -2619,17 +2619,32 @@ form.glass-card {
   }
 
   .site-header .gradient-text {
-    font-size: clamp(25px, 7.2vw, 34px) !important;
+    /* Was clamp(25px, 7.2vw, 34px) - crowded the icon cluster on common phone widths. */
+    font-size: clamp(18px, 5.6vw, 24px) !important;
     line-height: 1.05 !important;
   }
 
   .site-header .search-button,
   .site-header button.focus-ring {
-    width: 48px !important;
-    height: 48px !important;
-    min-width: 48px !important;
+    /* Was 48px - shrunk alongside the logo above so the header reads less congested; still a
+       comfortably tappable target. */
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
     display: grid !important;
     place-items: center !important;
+  }
+
+  .site-header .search-button svg,
+  .site-header button.focus-ring svg {
+    /* Menu/X render at lucide's 24px default (no size prop in Header.tsx) vs 19px for
+       Search/Sun/Moon - normalize all four to one size now that the buttons themselves match. */
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+  .site-header .flex.items-center.gap-2 {
+    gap: 10px !important;
   }
 
   .hero-section {
